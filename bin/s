@@ -1,0 +1,122 @@
+#!/bin/bash
+# TODO: Port this to python.
+# TODO: Add 'sudo paccheck --recursive --quiet --file-properties --md5sum --sha256sum --require-mtree --db-files --depends --files '
+# TODO: Add 'pacman -Fy # Download global package database including file lists of ALL packages' (useful for pacman -Fl do-i-need-this-package?)
+
+set -o nounset
+
+DATASET="$(zfs-poolname)/root/default"
+
+mountNasCache=1
+Fy=0
+clearCaches=0
+sysUpdate=1
+flatUpdate=1
+useNetbrake=0
+rebootOnSuccess=0
+poweroffOnSuccess=0
+skipSnapshots=0
+
+# Don't mount external package cache.
+if [[ ${1-} == 'n' ]]; then
+  mountNasCache=0
+  shift
+fi
+
+# Update pkgfile database.
+if [[ ${1-} == 'u' ]]; then
+  Fy=1
+  shift
+fi
+
+# Clear package caches.
+if [[ ${1-} == 'c' ]]; then
+  clearCaches=1
+  shift
+fi
+
+# Clear package caches.
+if [[ ${1-} == 'noUpdate' ]]; then
+  sysUpdate=0
+  flatUpdate=0
+  shift
+fi
+
+# Shape bandwidth with netbrake
+if [[ ${1-} == 'b' ]]; then
+  useNetbrake=1
+  shift
+fi
+
+# Reboot after successfully updating.
+if [[ ${1-} == 'r' ]]; then
+  rebootOnSuccess=1
+  shift
+fi
+
+# Poweroff after successfully updating.
+if [[ ${1-} == 'p' ]]; then
+  poweroffOnSuccess=1
+  shift
+fi
+
+# Don't make new or delete old snapshots.
+if [[ ${1-} == 's' ]]; then
+  skipSnapshots=1
+  shift
+fi
+
+if [[ $useNetbrake -eq 1 ]]; then
+  export PACMAN='netbrake -r 300000 pacman'
+fi
+
+# caching sudo, so pressing ctrl+c doesn't trigger 'snapshot creation failure' errors further down
+sudo echo || exit 202
+
+SNAPPSHOT_NAME="$DATASET@pre_update_$(date +%Y-%m-%d-%a)"
+if [[ $skipSnapshots -ne 1 ]];then
+  if sudo zfs snapshot "$SNAPPSHOT_NAME"; then
+    echo ":: snapshot created: $SNAPPSHOT_NAME"
+    # TODO - this fails if there is no pre_update_* snapshot
+    if zfs list -t snapshot -H -o name | grep -v "^$SNAPPSHOT_NAME$" | grep "^$DATASET@pre_update_.*" | xargs --max-args=1 sudo zfs destroy; then
+      echo ":: old snapshots destroyed"
+    else
+      echo ":: destruction of old snapshots failed"
+      exit 201
+    fi
+  else
+    echo ":: snapshot creation failed: $SNAPPSHOT_NAME"
+  fi
+fi
+
+if [[ $mountNasCache -eq 1 ]]; then
+  #(n > /dev/null) && (echo ':: nas-pkg-cache mounted';) || (echo ':: nas-pkg-cache mount failed'; exit 1;)
+  if [[ $(n > /dev/null) -eq 0 ]]; then
+    echo ':: nas-pkg-cache mounted'
+  else
+    echo ':: nas-pkg-cache mount failed'
+    exit 1
+  fi
+fi
+
+if [[ $Fy -eq 1 ]]; then
+  paru -Fy
+fi
+
+if [[ $clearCaches -eq 1 ]]; then
+  paru -Sc
+  exit
+fi
+
+if [[ $sysUpdate -eq 1 ]]; then
+  if paru --needed --devel -Syu "$@"; then
+    if [[ $rebootOnSuccess -eq 1 ]]; then
+      systemctl reboot
+    fi
+    if [[ $poweroffOnSuccess -eq 1 ]]; then
+      systemctl poweroff
+    fi
+  fi
+  exit
+fi
+
