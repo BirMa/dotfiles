@@ -9,66 +9,56 @@ DATASET="$(zfs-poolname)/root/default"
 
 mountNasCache=1
 Fy=0
-clearCaches=0
+cleanup=0
 sysUpdate=1
 flatUpdate=1
-useNetbrake=0
 rebootOnSuccess=0
 poweroffOnSuccess=0
 skipSnapshots=0
 
-# Don't mount external package cache.
-if [[ ${1-} == 'n' ]]; then
-  mountNasCache=0
-  shift
-fi
-
-# Update pkgfile database.
-if [[ ${1-} == 'u' ]]; then
-  Fy=1
-  shift
-fi
-
-# Clear package caches.
-if [[ ${1-} == 'c' ]]; then
-  clearCaches=1
-  shift
-fi
-
-# Clear package caches.
-if [[ ${1-} == 'noUpdate' ]]; then
-  sysUpdate=0
-  flatUpdate=0
-  shift
-fi
-
-# Shape bandwidth with netbrake
-if [[ ${1-} == 'b' ]]; then
-  useNetbrake=1
-  shift
-fi
-
-# Reboot after successfully updating.
-if [[ ${1-} == 'r' ]]; then
-  rebootOnSuccess=1
-  shift
-fi
-
-# Poweroff after successfully updating.
-if [[ ${1-} == 'p' ]]; then
-  poweroffOnSuccess=1
-  shift
-fi
-
-# Don't make new or delete old snapshots.
-if [[ ${1-} == 's' ]]; then
-  skipSnapshots=1
-  shift
-fi
-
-if [[ $useNetbrake -eq 1 ]]; then
-  export PACMAN='netbrake -r 300000 pacman'
-fi
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    n|noMount)
+      # Don't mount external package cache.
+      mountNasCache=0
+      shift
+      ;;
+    u|updatePkgDb)
+      # Update pkgfile database.
+      Fy=1
+      shift
+      ;;
+    c|clearPkgCaches)
+      # Clear package caches.
+      cleanup=1
+      shift
+      ;;
+    noUpdate)
+      sysUpdate=0
+      flatUpdate=0
+      shift
+      ;;
+    r|reboot)
+      # Reboot after successfully updating.
+      rebootOnSuccess=1
+      shift
+      ;;
+    p|poweroff)
+      # Poweroff after successfully updating.
+      poweroffOnSuccess=1
+      shift
+      ;;
+    s|skipSnapshots)
+      # Don't make new or delete old snapshots.
+      skipSnapshots=1
+      shift
+      ;;
+    *)
+      echo "Unknown option $1"
+      exit 1
+      ;;
+  esac
+done
 
 # caching sudo, so pressing ctrl+c doesn't trigger 'snapshot creation failure' errors further down
 sudo echo || exit 202
@@ -103,20 +93,28 @@ if [[ $Fy -eq 1 ]]; then
   paru -Fy
 fi
 
-if [[ $clearCaches -eq 1 ]]; then
-  paru -Sc
-  exit
+if [[ $cleanup -eq 1 ]]; then
+  #paru -Sc # Debatable whether I ever want to use this. The keep-last-three-versions hook works nicely.
+  flatpak uninstall --unused --delete-data
 fi
 
+RET=0
 if [[ $sysUpdate -eq 1 ]]; then
-  if paru --needed --devel -Syu "$@"; then
-    if [[ $rebootOnSuccess -eq 1 ]]; then
-      systemctl reboot
-    fi
-    if [[ $poweroffOnSuccess -eq 1 ]]; then
-      systemctl poweroff
-    fi
-  fi
-  exit
+  paru --needed --devel -Syu "$@"
+  RET=$( test $? -eq "$RET" -a $? -eq 0; echo $? ) # bash equivalent of RET |= $?
 fi
 
+if [[ $flatUpdate -eq 1 ]]; then
+  echo -e "\nflatpak update..."
+  flatpak update
+  RET=$( test $? -eq "$RET" -a $? -eq 0; echo $? )
+fi
+
+if [[ "$RET" -eq 0 ]]; then
+  if [[ $rebootOnSuccess -eq 1 ]]; then
+    systemctl reboot
+  fi
+  if [[ $poweroffOnSuccess -eq 1 ]]; then
+    systemctl poweroff
+  fi
+fi
