@@ -976,8 +976,11 @@ awful.rules.rules = {
     rule       = { class = "discord"},
     properties = { screen = screen_tools, tag = tag_communication },
   }, {
-    rule       = { class = "Steam", name  = "Friends.*" },
-    properties = { screen = screen_tools, tag = tag_communication },
+    -- Use for testing in awesome-client:
+    -- for c in awful.client.iterate(function (cl) return awful.rules.match(cl, {class = "steam", name = "Friends List.*"}) end) do print(c) end
+    -- The casing of both class and name is relevant for the match rule
+    rule       = { class = "steam", name = "Friends List.*" },
+    properties = { screen = screen_tools, tag = "4" },
   }, {
     rule       = { class = "kitty", name  = "monitoring_nvtop" },
     properties = { screen = screen_tools, tag = tag_monitoring },
