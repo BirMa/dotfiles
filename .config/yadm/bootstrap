@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if command -v vim >/dev/null 2>&1; then
-  echo "bootstraping Vim ..."
-  vim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
-  echo "bootstraping Vim done"
+if command -v nvim >/dev/null 2>&1; then
+  echo "bootstraping nvim ..."
+  nvim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
+  echo "bootstraping nvim done"
 fi
