@@ -1,0 +1,5 @@
+#! /bin/sh
+
+MOUNT_PATH=$(m) && stat "$MOUNT_PATH/mp3/$1" &> /dev/null && ( thunar "$MOUNT_PATH/mp3/$1" &> /dev/null & ) && exit 0
+exit 1
+

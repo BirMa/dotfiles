@@ -1,0 +1,22 @@
+#! /usr/bin/env bash
+
+declare -a arr=(
+ "/mnt/F/alle"
+ "/mnt/F/bilder"
+ "/mnt/F/buecher"
+ "/mnt/F/musik"
+ "/mnt/F/videos"
+)
+
+if [[ "$1" = "u" ]]; then
+  for i in "${arr[@]}"
+  do
+    n u "$i"
+  done
+else
+  for i in "${arr[@]}"
+  do
+    n X "$i"
+  done
+fi
+

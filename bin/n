@@ -1,0 +1,26 @@
+#! /bin/bash
+
+if [[ -n "$2" ]]; then
+  MOUNT_PATH="$2"
+else
+  MOUNT_PATH='/mnt/F/alle'
+fi
+
+
+if [[ "$1" = "u" ]]; then
+  umount $MOUNT_PATH && exit 0
+  exit 1
+elif [[ "$1" = "uf" ]]; then
+  echo "lazy forced unmount"
+  umount -f -l $MOUNT_PATH && exit 0
+  exit 1
+else
+  # If it's already mounted, just print the path
+  if /usr/bin/findmnt "$MOUNT_PATH" &>/dev/null; then
+    echo "$MOUNT_PATH"
+  else # otherwise mount it, and print
+    mount $MOUNT_PATH && echo "$MOUNT_PATH" && exit 0
+    exit 1
+  fi
+fi
+
