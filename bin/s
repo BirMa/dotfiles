@@ -4,6 +4,7 @@
 # TODO: Add 'pacman -Fy # Download global package database including file lists of ALL packages' (useful for pacman -Fl do-i-need-this-package?)
 
 set -o nounset
+set -o errexit
 
 DATASET="$(zfs-poolname)/root/default"
 
