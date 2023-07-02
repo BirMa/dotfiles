@@ -53,6 +53,11 @@ while [[ $# -gt 0 ]]; do
       skipSnapshots=1
       shift
       ;;
+    -)
+      # No more parameters, shift the - and stop processing them
+      shift
+      break
+      ;;
     *)
       echo "Unknown option $1"
       exit 1
