@@ -669,8 +669,8 @@ globalkeys = awful.util.table.join(
   awful.key({ modkey, "Shift"            }, "F1",       function ()
     awful.spawn("sonobus")
     os.execute("sleep .2") -- sleep to make window positions deterministic
-    awful.spawn("easyeffects")
-    os.execute("sleep .2")
+    -- awful.spawn("easyeffects")
+    -- os.execute("sleep .2")
     awful.spawn("pavucontrol")
   end),
 
