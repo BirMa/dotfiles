@@ -1,0 +1,23 @@
+#! /usr/bin/env bash
+
+set -o nounset
+set -o errexit
+
+SUFFIX="${1:-""}"
+
+POOL="$(zfs-poolname)"
+
+declare -a DATASETS=(
+  "$POOL/data/home"
+  "$POOL/root/default"
+)
+
+for i in "${DATASETS[@]}"
+do
+  name="$i@routine_$(/usr/bin/date +%Y-%m-%d-%a)"
+  if [[ -n "$SUFFIX" ]]; then
+    name="${name}_$SUFFIX"
+  fi
+  sudo zfs snapshot "$name" || echo "creating '$name' failed"
+done
+
