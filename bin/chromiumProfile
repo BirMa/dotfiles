@@ -19,8 +19,8 @@ if [[ ! -d "$XDG_CONFIG_HOME/chromiumProfiles/$ProfileName" ]] || [[ ! -d "$XDG_
   str="$(basename "$0"): Profile or cache folder \"$ProfileName\" not found; creating both..."
   echo "$str"
   notify-send "$str"
-  mkdir --verbose "$XDG_CONFIG_HOME/chromiumProfiles/$ProfileName"
-  mkdir --verbose "$XDG_CACHE_HOME/chromiumProfiles/$ProfileName"
+  mkdir --parent --verbose "$XDG_CONFIG_HOME/chromiumProfiles/$ProfileName"
+  mkdir --parent --verbose "$XDG_CACHE_HOME/chromiumProfiles/$ProfileName"
   exit 1
 fi
 
@@ -31,8 +31,8 @@ if [[ "$ProfileName" = "tmp" ]]; then
     echo "$XDG_CACHE_HOME/chromiumProfiles/$ProfileName"
     rm --verbose --one-file-system --recursive --force "$XDG_CONFIG_HOME/chromiumProfiles/$ProfileName"
     rm --verbose --one-file-system --recursive --force "$XDG_CACHE_HOME/chromiumProfiles/$ProfileName"
-    mkdir --verbose "$XDG_CONFIG_HOME/chromiumProfiles/$ProfileName"
-    mkdir --verbose "$XDG_CACHE_HOME/chromiumProfiles/$ProfileName"
+    mkdir --parent --verbose "$XDG_CONFIG_HOME/chromiumProfiles/$ProfileName"
+    mkdir --parent --verbose "$XDG_CACHE_HOME/chromiumProfiles/$ProfileName"
   fi
 fi
 
