@@ -9,4 +9,6 @@ export STEAM_RUNTIME=0
 grep --quiet 'display:none !important;   ' "$XDG_DATA_HOME/Steam/steamui/css/sp.css" ||
   notify-send --urgency=critical '"What'\''new" is back!               ' 'Valve is at it again\nFUUUUUU'
 
-/usr/bin/steam -console "$@"
+#/usr/bin/steam -console "$@"
+#/usr/bin/steam -console -dev -tcp "$@"
+/usr/bin/steam "$@"
