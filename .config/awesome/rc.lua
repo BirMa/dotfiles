@@ -666,7 +666,7 @@ globalkeys = awful.util.table.join(
   awful.key({ modkey,                    }, "c",        function () awful.spawn("speedcrunch") end),
 
   -- launch sound related tools
-  awful.key({ modkey, "Shift"            }, "F1",       function ()
+  awful.key({ modkey, "Shift"            }, "F"..tag_soundtools,       function ()
     awful.spawn("sonobus")
     os.execute("sleep .2") -- sleep to make window positions deterministic
     awful.spawn("easyeffects")
@@ -681,13 +681,13 @@ globalkeys = awful.util.table.join(
   awful.key({ modkey,                    }, "F2",       function () awful.spawn("thunderbird") end),
 
   -- launch communication tools
-  awful.key({ modkey, "Shift"            }, "F2",       function ()
+  awful.key({ modkey, "Shift"            }, "F"..tag_communication,       function ()
     awful.spawn("discord")
     awful.spawn("telegram-desktop")
   end),
 
   -- launch monitoring
-  awful.key({ modkey, "Shift"            }, "F3",       function ()
+  awful.key({ modkey, "Shift"            }, "F"..tag_monitoring,       function ()
     awful.spawn("kitty --title monitoring_nethogs nethogs_suid")
     os.execute("sleep .2") -- sleep to make window positions deterministic
     awful.spawn("kitty --title monitoring_nvtop nvtop")
