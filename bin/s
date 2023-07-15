@@ -54,7 +54,7 @@ while [[ $# -gt 0 ]]; do
       skipSnapshots=1
       shift
       ;;
-    -)
+    -|--)
       # No more parameters, shift the - and stop processing them
       shift
       break
