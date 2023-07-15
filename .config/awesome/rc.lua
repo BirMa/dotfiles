@@ -752,47 +752,22 @@ clientkeys = awful.util.table.join(
 
 
   -- Move client to screen
-  awful.key({ modkey, "Shift",           }, "n",    function (c) c:move_to_screen()               end, {description = "move to (next) screen", group = "client"}),
+  awful.key({ modkey, "Shift",        }, "n",        function (c) c:move_to_screen()               end, {description = "move to (next) screen", group = "client"}),
 
 
   -- layout things
   
   -- minimize client
-  awful.key({ modkey, altkey    }, "m",
-    function (c)
-      -- The client currently has the input focus, so it cannot be
-      -- minimized, since minimized clients can't have the focus.
-      c.minimized = true
-    end ,
-    {description = "minimize", group = "client"}
-  ),
+  awful.key({ modkey, altkey          }, "m",        function (c) c.minimized = true               end, {description = "minimize", group = "client"}),
 
   -- maximize client
-  awful.key({ modkey,           }, "m",
-    function (c)
-      c.maximized = true
-      c:raise()
-    end ,
-    {description = "maximize", group = "client"}
-  ),
+  awful.key({ modkey,                 }, "m",        function (c) c.maximized = true c:raise()     end, {description = "maximize", group = "client"}),
 
   -- get rid of any maximization (vertical, horizontal maximization or whichever)
-  awful.key({ modkey, "Shift"   }, "m",
-    function (c)
-      c.maximized = false
-      c:raise()
-    end ,
-    {description = "unmaximize", group = "client"}
-  ),
+  awful.key({ modkey, "Shift"         }, "m",        function (c) c.maximized = false c:raise()    end, {description = "unmaximize", group = "client"}),
 
   -- toggle client fullscreen (causes confusion on some clients that are fullscreen aware themselfes)
-  awful.key({ modkey,                 }, "f",
-    function (c)
-      c.fullscreen = not c.fullscreen
-      c:raise()
-    end,
-    {description = "toggle fullscreen", group = "client"}
-  ),
+  awful.key({ modkey,                 }, "f",        function (c) c.fullscreen = not c.fullscreen c:raise() end, {description = "toggle fullscreen", group = "client"}),
 
   -- toggle sticky
   awful.key({ modkey,                 }, "s",        function (c) c.sticky = not c.sticky          end),
