@@ -908,8 +908,8 @@ root.keys(globalkeys)
 -- {{{ Rules
 -- Rules to apply to new clients (through the "manage" signal).
 tag_soundtools = "1"
-tag_communication = "2"
-tag_monitoring = "3"
+tag_monitoring = "2"
+tag_communication = "3"
 awful.rules.rules = {
   {
     rule = { }, -- All clients will match this rule.
