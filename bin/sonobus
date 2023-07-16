@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+RET="unset"
+while [[ "$RET" != "0" ]]; do
+  echo "starting sonobus..."
+  /usr/bin/sonobus
+  RET="$?"
+  echo "esonobus xited with code $RET"
+done
