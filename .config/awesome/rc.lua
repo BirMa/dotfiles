@@ -134,6 +134,15 @@ lock_suspend_ram_cmd = "suspend_ram l"
 
 notifySendWmNameAndWmClass_cmd = "notifySendWmNameAndWmClass"
 
+tag_soundtools = "1"
+tag_monitoring = "2"
+tag_communication = "3"
+
+if os.getenv("USER") == 'md' then
+  screen_tools = 2
+else
+  screen_tools = 1
+end
 
 -- Wibar width (right-click menu on taskbar)
 local wibar_width = 550
@@ -162,12 +171,6 @@ awful.layout.layouts = {
   awful.layout.suit.tile,
   --awful.layout.suit.grid,
 }
-
-if os.getenv("USER") == 'md' then
-  screen_tools = 2
-else
-  screen_tools = 1
-end
 -- }}}
 
 -- {{{ Helper functions
@@ -417,8 +420,8 @@ awful.screen.connect_for_each_screen(
 
     -- Set non-default tag layouts
     if s.index == screen_tools then
-      awful.tag.find_by_name(s, "1").layout = awful.layout.suit.tile
-      awful.tag.find_by_name(s, "3").layout = awful.layout.suit.tile.bottom
+      awful.tag.find_by_name(s, tag_soundtools).layout = awful.layout.suit.tile
+      awful.tag.find_by_name(s, tag_monitoring).layout = awful.layout.suit.tile.bottom
     end
 
     -- Create a promptbox for each screen
@@ -666,7 +669,7 @@ globalkeys = awful.util.table.join(
   awful.key({ modkey,                    }, "c",        function () awful.spawn("speedcrunch") end),
 
   -- launch sound related tools
-  awful.key({ modkey, "Shift"            }, "F"..tag_soundtools,       function ()
+  awful.key({ modkey, "Shift"            }, "F"..tag_soundtools,    function ()
     awful.spawn("sonobus")
     os.execute("sleep .2") -- sleep to make window positions deterministic
     awful.spawn("easyeffects")
@@ -675,24 +678,24 @@ globalkeys = awful.util.table.join(
   end),
 
   -- launch pavucontrol
-  awful.key({ modkey,                    }, "F1",       function () awful.spawn("pavucontrol") end),
-
-  -- launch thunderbird
-  awful.key({ modkey,                    }, "F2",       function () awful.spawn("thunderbird") end),
-
-  -- launch communication tools
-  awful.key({ modkey, "Shift"            }, "F"..tag_communication,       function ()
-    awful.spawn("discord")
-    awful.spawn("telegram-desktop")
-  end),
+  awful.key({ modkey,                    }, "F"..tag_soundtools,    function () awful.spawn("pavucontrol") end),
 
   -- launch monitoring
-  awful.key({ modkey, "Shift"            }, "F"..tag_monitoring,       function ()
-    awful.spawn("kitty --title monitoring_nethogs nethogs_suid")
+  awful.key({ modkey, "Shift"            }, "F"..tag_monitoring,    function ()
+    awful.spawn(terminal_cmd.." --title monitoring_nethogs nethogs_suid")
     os.execute("sleep .2") -- sleep to make window positions deterministic
-    awful.spawn("kitty --title monitoring_nvtop nvtop")
+    awful.spawn(terminal_cmd.." --title monitoring_nvtop nvtop")
     os.execute("sleep .2")
-    awful.spawn("kitty --title monitoring_htop htop")
+    awful.spawn(terminal_cmd.." --title monitoring_htop htop")
+  end),
+
+  -- launch thunderbird
+  awful.key({ modkey,                    }, "F"..tag_communication, function () awful.spawn("thunderbird") end),
+
+  -- launch communication tools
+  awful.key({ modkey, "Shift"            }, "F"..tag_communication, function ()
+    awful.spawn("discord")
+    awful.spawn("telegram-desktop")
   end),
 
   -- launch firefox
@@ -882,9 +885,6 @@ root.keys(globalkeys)
 
 -- {{{ Rules
 -- Rules to apply to new clients (through the "manage" signal).
-tag_soundtools = "1"
-tag_monitoring = "2"
-tag_communication = "3"
 awful.rules.rules = {
   {
     rule = { }, -- All clients will match this rule.
