@@ -1,7 +1,7 @@
 #! /usr/bin/bash
 
-export LD_PRELOAD="/usr/lib/libgio-2.0.so.0 /usr/lib/libglib-2.0.so.0" # useless for the ubuntu12_32 binaries, but should be useful for later executed ubuntu12_64 bins
-export STEAM_RUNTIME=0
+#export LD_PRELOAD="/usr/lib/libgio-2.0.so.0 /usr/lib/libglib-2.0.so.0" # useless for the ubuntu12_32 binaries, but should be useful for later executed ubuntu12_64 bins
+export STEAM_RUNTIME=1
 
 # /home/md/.local/share/Steam/steamui/css/sp.css
 # This used to work: .libraryhome_UpdatesContainer_17uEB{display: none !important; ....
