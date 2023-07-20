@@ -16,6 +16,7 @@ flatUpdate=1
 rebootOnSuccess=0
 poweroffOnSuccess=0
 skipSnapshots=0
+noConfirm=0
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -52,6 +53,11 @@ while [[ $# -gt 0 ]]; do
     s|skipSnapshots)
       # Don't make new or delete old snapshots.
       skipSnapshots=1
+      shift
+      ;;
+    y|yes)
+      # Suppress interactivity and assume yes for update processes
+      noConfirm=1
       shift
       ;;
     -|--)
@@ -101,18 +107,34 @@ fi
 
 if [[ $cleanup -eq 1 ]]; then
   #paru -Sc # Debatable whether I ever want to use this. The keep-last-three-versions hook works nicely.
-  flatpak uninstall --unused --delete-data
+  cmd="flatpak uninstall --unused --delete-data"
+  if [[ $noConfirm ]]; then
+    cmd="$cmd --assumeyes"
+  fi
+  eval "$cmd"
 fi
 
 RET=0
 if [[ $sysUpdate -eq 1 ]]; then
-  paru --needed --devel -Syu "$@"
+  cmd="paru --needed --devel -Syu"
+  if [[ $noConfirm ]]; then
+    cmd="$cmd --noconfirm"
+  fi
+  cmd="$cmd $*"
+
+  eval "$cmd"
   RET=$( test $? -eq "$RET" -a $? -eq 0; echo $? ) # bash equivalent of RET |= $?
 fi
 
 if [[ $flatUpdate -eq 1 ]]; then
   echo -e "\nflatpak update..."
-  flatpak update
+
+  cmd="flatpak update"
+  if [[ $noConfirm ]]; then
+    cmd="$cmd --assumeyes"
+  fi
+
+  eval "$cmd"
   RET=$( test $? -eq "$RET" -a $? -eq 0; echo $? )
 fi
 
