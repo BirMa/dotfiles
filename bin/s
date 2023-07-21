@@ -17,6 +17,7 @@ rebootOnSuccess=0
 poweroffOnSuccess=0
 skipSnapshots=0
 noConfirm=0
+downloadPackages=0
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -58,6 +59,14 @@ while [[ $# -gt 0 ]]; do
     y|yes)
       # Suppress interactivity and assume yes for update processes
       noConfirm=1
+      shift
+      ;;
+    w|downloadOnly)
+      # Don't install anything; just download packages into cache; only applies to pacman
+      downloadPackages=1
+      skipSnapshots=1
+      flatUpdate=0
+      sysUpdate=0
       shift
       ;;
     -|--)
@@ -112,6 +121,10 @@ if [[ $cleanup -eq 1 ]]; then
     cmd="$cmd --assumeyes"
   fi
   eval "$cmd"
+fi
+
+if [[ $downloadPackages -eq 1 ]]; then
+  paru --needed --devel --downloadonly --noconfirm -Syu
 fi
 
 RET=0
