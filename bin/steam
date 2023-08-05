@@ -6,7 +6,7 @@ export STEAM_RUNTIME=1
 # /home/md/.local/share/Steam/steamui/css/sp.css
 # This used to work: .libraryhome_UpdatesContainer_17uEB{display: none !important; ....
 # File size needs to be same, use okteta for editing and dhex for neat binary diffs
-grep --quiet 'display:none !important;   ' "$XDG_DATA_HOME/Steam/steamui/css/sp.css" ||
+grep --quiet 'display: none !important;   ' "$XDG_DATA_HOME"/Steam/steamui/css/*.css ||
   notify-send --urgency=critical '"What'\''new" is back!               ' 'Valve is at it again\nFUUUUUU'
 
 #/usr/bin/steam -console "$@"
