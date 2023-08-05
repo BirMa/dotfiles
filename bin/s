@@ -91,7 +91,7 @@ if [[ $skipSnapshots -ne 1 ]];then
   if sudo zfs snapshot "$SNAPPSHOT_NAME"; then
     echo ":: snapshot created: $SNAPPSHOT_NAME"
     # TODO - this fails if there is no pre_update_* snapshot
-    if zfs list -t snapshot -H -o name | grep -v "^$SNAPPSHOT_NAME$" | grep "^$DATASET@pre_update_.*" | xargs --max-args=1 sudo zfs destroy; then
+    if sudo zfs list -t snapshot -H -o name | grep -v "^$SNAPPSHOT_NAME$" | grep "^$DATASET@pre_update_.*" | xargs --max-args=1 sudo zfs destroy; then
       echo ":: old snapshots destroyed"
     else
       echo ":: destruction of old snapshots failed"
