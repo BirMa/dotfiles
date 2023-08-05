@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-echo "$(zpool get -H bootfs | cut -f1)"
+echo "$(sudo zpool get -H bootfs | cut -f1)"

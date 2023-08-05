@@ -2,13 +2,13 @@
 
 POOL="$(zfs-poolname)"
 
-zfs list -t snapshot
+sudo zfs list -t snapshot
 echo
-zfs list -o usedsnap,name,used,avail,refer,mountpoint | grep 'MOUNTPOINT$\| /\S*$'
+sudo zfs list -o usedsnap,name,used,avail,refer,mountpoint | grep 'MOUNTPOINT$\| /\S*$'
 echo
-zpool list -o cap,free,alloc,size
+sudo zpool list -o cap,free,alloc,size
 echo
-zpool get -H -o name,property,value dedup "$POOL"
-zfs get -H -o name,property,value compressratio "$POOL"
+sudo zpool get -H -o name,property,value dedup "$POOL"
+sudo zfs get -H -o name,property,value compressratio "$POOL"
 echo
-zpool iostat -l
+sudo zpool iostat -l
