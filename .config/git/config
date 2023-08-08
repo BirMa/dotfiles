@@ -1,0 +1,126 @@
+[include]
+  path = "./private.ini"
+[push]
+  default = simple
+[core]
+  editor = nvim
+  #pager = delta
+[merge]
+  tool = nvim -d
+  zdiff3 = zdiff3
+  #tool = vscode
+  #conflictStyle = zdiff3
+[mergetool "vscode"]
+ cmd = code --wait $MERGED
+[color]
+  branch = auto
+  diff = auto
+  interactive = auto
+  status = auto
+  ui = auto
+[diff]
+  #statWidth=260 # not implmenented
+  #statNameWidth=280 # not implmenented
+  statGraphWidth=20
+  tool = vscode
+[interactive]
+  #diffFilter = delta --color-only --navigate --relative-paths --max-line-length 0 --width=variable --wrap-max-lines=unlimited
+  #diffFilter = delta --color-only --navigate --relative-paths --max-line-length 0
+[delta]
+  line-numbers = true
+  side-by-side = true
+[alias]
+  a    = add
+  ap   = add --patch
+  c    = commit
+  ca   = commit --amend
+  cm   = !git add . && git commit -m
+  co   = checkout
+  cop  = checkout --patch
+  d    = diff --minimal
+  ds   = diff --minimal --staged
+  dsw  = diff --minimal --staged --word-diff
+  dw   = diff --minimal --word-diff
+
+  p    = push
+  pn   = push --no-verify
+  pf   = push --force
+
+  pull = pull --log=30
+
+  filelog = log --patch
+  l    = log --pretty=oneline
+  lg   = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+  lga  = log --graph --decorate --pretty=oneline --abbrev-commit --all
+  lgd  = log --pretty=format:'%Cred%h %Cgreen%ad%C(yellow)%d %Creset%s%Cblue %Cgreen(%cr) %C(bold blue)<%an>%Creset' --decorate --date=iso
+  lgf  = log --pretty=format:'%Cred%h%C(yellow)%d %Creset%s%Cblue %Cgreen(%cr) %C(bold blue)<%an>%Creset' --decorate --numstat --date=relative
+  lgfc = "!f() { git lgf "$1"^.."$1"; }; f"
+  lk   = !gitk --all
+  logtree = log --graph --oneline --decorate --all
+  lol  = log --all --color --pretty=format:'%C(auto)%h %Cred %<(16)%an %Creset%C(auto)%s %b %Cgreen(%cr,%ar) %Creset%C(auto)%d'
+  lol1 = log --graph --decorate --pretty=oneline --abbrev-commit # brief
+  lol2 = log --graph --oneline --all --decorate --source
+  lol3 = log --graph --oneline --all --decorate --simplify-by-decoration --pretty='%ar %s %h'
+  # As opposed to 'git log --stat' this shows all changed files in the commit TODO: these two aliases use cmdline as a message queue, fix that at some point
+  # TODO: Most medium to large sized projects totally break the pipe
+  logfiles = "!logFiles() { git log --format=\"%h\" \"${GIT_PREFIX:-./}/$1\" | xargs git show --name-only; }; logFiles"
+  # Like above but shows complete diffs
+  # TODO: Most medium to large sized projects totally break the pipe
+  logdiffs = "!logDiffs() { git log --format=\"%h\" \"${GIT_PREFIX:-./}/$1\" | xargs git show; }; logDiffs"
+  lsa  = rev-list --objects --unpacked --indexed-objects --all
+  ls   = !git lsa | cut -d' ' -f2 -s | sort -u
+
+  diffstat = diff --stat --stat-width=290 --stat-name-width=260 --stat-graph-width=20
+  dirstat = diff --dirstat
+
+  r    = reset
+  rs   = restore --staged
+  last = log -1 HEAD
+
+  s    = status
+  tagv = tag --format='%(refname): %(contents:subject)  %(contents:body)'
+
+  ec   = config --global -e
+  aliase = !git config --list | grep '^alias' | cut -c 7-
+
+  # undo = reset HEAD~1 --mixed
+
+  # git commit --fixup :/foo # This searches for a commit with foo in its commit message (fixup des this: https://nemanjas.hashnode.dev/what-is-git-fixup-and-how-its-helpful)
+
+[commit]
+  verbose = true
+[pull]
+  # rebase = true # not always a good idea
+[init]
+	defaultBranch = master
+
+# TODO:
+# check https://git-scm.com/docs/git-diff#git-diff---color-movedltmodegt
+# and
+# check https://news.ycombinator.com/item?id=25069350
+
+
+#[includeIf "gitdir:~/.local/share/yadm/repo.git"]
+#  path = ~/.config/git/config_github
+
+#[includeIf "gitdir:/var/www/"]
+#  path = ~/.config/git/config_work
+#
+#[includeIf "gitdir:~/sonstige/projects/work/ris/"]
+#  path = ~/.config/git/config_work
+#
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+[cola]
+	tabwidth = 4
+	fontdiff = Iosevka Term,10,-1,5,50,0,0,0,0,0
+	theme = default
+	boldheaders = false
+	statusshowtotals = true
+	statusindent = true
+[gui]
+	diffcontext = 7
+	historybrowser = gitg
