@@ -1,5 +1,6 @@
 [include]
-  path = "./private.ini"
+  path = "./github.ini"
+  path = "./github_private.ini"
 [push]
   default = simple
 [core]
