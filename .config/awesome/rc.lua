@@ -557,24 +557,25 @@ globalkeys = awful.util.table.join(
   ),
 
   -- Sound control
-
-  -- sound volume up
   awful.key({                            }, "XF86AudioRaiseVolume", function () volume.up() end),
-
-  -- sound volume down
   awful.key({                            }, "XF86AudioLowerVolume", function () volume.down() end),
-
-  -- sound mute/unmute
   awful.key({                            }, "XF86AudioMute", function () volume.toggleMute() end),
 
   -- Media player controls
   awful.key({                            }, "XF86AudioPlay",  function () awful.spawn(audio_play) end),
+  awful.key({ modkey, "Control"          }, "KP_Delete",      function () awful.spawn(audio_play) end),
+  awful.key({ modkey, "Control"          }, "KP_Decimal",     function () awful.spawn(audio_play) end),
   awful.key({                            }, "XF86AudioPause", function () awful.spawn(audio_pause) end),
+  awful.key({ modkey, "Control"          }, "KP_Insert",      function () awful.spawn(audio_pause) end),
+  awful.key({ modkey, "Control"          }, "KP_0",           function () awful.spawn(audio_pause) end),
   awful.key({ modkey, "Control"          }, "KP_Begin",       function () awful.spawn(audio_playpause) end),
+  awful.key({ modkey, "Control"          }, "KP_5",           function () awful.spawn(audio_playpause) end),
   awful.key({                            }, "XF86AudioNext",  function () awful.spawn(audio_next) end),
   awful.key({ modkey, "Control"          }, "KP_Right",       function () awful.spawn(audio_next) end),
+  awful.key({ modkey, "Control"          }, "KP_6",           function () awful.spawn(audio_next) end),
   awful.key({                            }, "XF86AudioPrev",  function () awful.spawn(audio_prev) end),
   awful.key({ modkey, "Control"          }, "KP_Left",        function () awful.spawn(audio_prev) end),
+  awful.key({ modkey, "Control"          }, "KP_4",           function () awful.spawn(audio_prev) end),
 
   -- Display brightness control
   awful.key({                            }, "XF86MonBrightnessUp", function () awful.spawn(inc_display_brightness) end),
