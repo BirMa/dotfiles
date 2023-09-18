@@ -140,9 +140,9 @@ tag_communication = "3"
 
 if os.getenv("USER") == 'md' then
   screen_tools = 2
+  more_tools = true
 else
   screen_tools = 1
-  more_tools = true
 end
 
 -- Wibar width (right-click menu on taskbar)
@@ -674,9 +674,9 @@ globalkeys = awful.util.table.join(
   awful.key({ modkey, "Shift"            }, "F"..tag_soundtools,    function ()
     awful.spawn("sonobus")
     os.execute("sleep .2") -- sleep to make window positions deterministic
-    if more_tools == true then awful.spawn("easyeffects") end
-    os.execute("sleep .2")
-    awful.spawn("pavucontrol")
+    --if more_tools == true then awful.spawn("easyeffects") end
+    --os.execute("sleep .2")
+    if more_tools == true then awful.spawn("pavucontrol") end
   end),
 
   -- launch pavucontrol
