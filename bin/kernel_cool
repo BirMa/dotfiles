@@ -1,0 +1,23 @@
+#! /usr/bin/env bash
+# TODO - lots of this stuff should be global, make use of yadm globally
+
+# does installed kernel version match running kernel version?
+if [[ "$( uname -r | tr "." "-" )" = "$( pacman -Q linux | cut  -d\  -f2 | tr "." "-")" ]]; then
+    echo "yes" 
+else
+    echo -e "no"
+    echo -e "installed: $(pacman -Q linux | cut  -d\  -f2)"
+    echo -e "running:   $(uname -r)"
+fi
+
+BOOT_TIMESTAMP=$(/usr/bin/date --date "$(uptime --since)" +"%s")
+RAMFS_TIMESTAMP=$(/usr/bin/stat --format="%Y" /boot/initramfs-linux.img)
+KERNEL_TIMESTAMP=$(/usr/bin/stat --format="%Y" /boot/vmlinuz-linux)
+
+if [[ $RAMFS_TIMESTAMP -ge $BOOT_TIMESTAMP ]]; then
+    echo -e "(ramfs newer than boot time)"
+fi
+
+if [[ $KERNEL_TIMESTAMP -ge $BOOT_TIMESTAMP ]]; then
+    echo -e "(kernel newer than boot time)"
+fi
