@@ -2,8 +2,8 @@
 
 RET="unset"
 while [[ "$RET" != "0" ]]; do
-  echo "starting sonobus..."
+  echo "$(date --rfc-3339=n): starting sonobus..."
   /usr/bin/sonobus
   RET="$?"
-  echo "esonobus xited with code $RET"
+  echo "$(date --rfc-3339=n): sonobus exited with code $RET"
 done
