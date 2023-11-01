@@ -2,13 +2,13 @@
 
 ####### debug helper funcs ##################################################
 _xinitrc_print_pre() {
-  echo -e "xinitrc: pre  ${1}   $2   time: $(date +%s)/$(date)" >> ~/logs/xinitrc.log
+  echo -e "xinitrc: starting $1 time: $(date +%s)/$(date)" >> ~/logs/xinitrc.log
 }
 _xinitrc_print_post() {
-  echo -e "xinitrc: post ${1}   $2   pid: $(pidof "$1")   time: $(date +%s)/$(date)" >> ~/logs/xinitrc.log
+  echo -e "xinitrc: done     $1 time: $(date +%s)/$(date)" >> ~/logs/xinitrc.log
 }
 _xinitrc_print_msg() {
-  echo -e "xinitrc: msg ${1} time: $(date +%s)/$(date)" >> ~/logs/xinitrc.log
+  echo -e "xinitrc: msg $1 time: $(date +%s)/$(date)" >> ~/logs/xinitrc.log
 }
 #############################################################################
 
@@ -62,6 +62,12 @@ done
 _xinitrc_print_pre 'bash' 'devmon'
 devmon --sync --exec-on-drive 'notify-send "mount %l" "<b>%f</b> => <b>%d</b>"' --exec-on-unmount 'notify-send "unmount %l" "<b>%f</b> => <b>%d</b>"' --exec-on-remove 'notify-send "remove <b>%f</b>"' &
 _xinitrc_print_post 'bash' 'devmon'
+
+
+#_xinitrc_print_pre 'nvidia modprobe'
+#sudo sh -c 'modprobe -r nvidia_drm ; modprobe nvidia_drm modeset=1'
+#nvidia-modprobe --modeset #Maybe this does exactly the above and it's already suid root:root
+#_xinitrc_print_post 'nvidia modprobe'
 
 #############################################################################
 
