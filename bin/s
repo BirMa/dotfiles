@@ -47,7 +47,7 @@ while [[ $# -gt 0 ]]; do
       noConfirm=1
       shift
       ;;
-    p|poweroff)
+    p|poweroff|shutdown)
       # Poweroff after successfully updating.
       poweroffOnSuccess=1
       noConfirm=1
