@@ -2,6 +2,8 @@
 
 POOL="$(zfs-poolname)"
 
+sudo zpool status -v
+echo
 sudo zfs list -t snapshot
 echo
 sudo zfs list -o usedsnap,name,used,avail,refer,mountpoint | grep 'MOUNTPOINT$\| /\S*$'
