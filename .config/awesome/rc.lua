@@ -696,7 +696,7 @@ globalkeys = awful.util.table.join(
 
   -- launch communication tools
   awful.key({ modkey, "Shift"            }, "F"..tag_communication, function ()
-    awful.spawn("discord")
+    --awful.spawn("vencord")
     awful.spawn("telegram-desktop")
   end),
 
