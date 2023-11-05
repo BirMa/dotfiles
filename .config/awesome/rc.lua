@@ -950,6 +950,10 @@ awful.rules.rules = {
     rule       = { name = "Telegram"},
     properties = { screen = screen_tools, tag = tag_communication },
   }, {
+    rule       = { class = "vencorddesktop"},
+    properties = { screen = screen_tools, tag = tag_communication },
+  }, {
+  }, {
     rule       = { class = "discord"},
     properties = { screen = screen_tools, tag = tag_communication },
   }, {
