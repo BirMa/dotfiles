@@ -673,10 +673,10 @@ globalkeys = awful.util.table.join(
   -- launch sound related tools
   awful.key({ modkey, "Shift"            }, "F"..tag_soundtools,    function ()
     awful.spawn("sonobus")
-    os.execute("sleep .2") -- sleep to make window positions deterministic
+    --os.execute("sleep .2") -- sleep to make window positions deterministic
     --if more_tools == true then awful.spawn("easyeffects") end
     --os.execute("sleep .2")
-    if more_tools == true then awful.spawn("pavucontrol") end
+    --if more_tools == true then awful.spawn("pavucontrol") end
   end),
 
   -- launch pavucontrol
@@ -696,8 +696,8 @@ globalkeys = awful.util.table.join(
 
   -- launch communication tools
   awful.key({ modkey, "Shift"            }, "F"..tag_communication, function ()
-    awful.spawn("discord")
-    awful.spawn("telegram-desktop")
+    if more_tools == true then awful.spawn("vencord") end
+    awful.spawn("telegram-desktop");
   end),
 
   -- launch firefox
