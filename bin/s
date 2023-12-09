@@ -11,16 +11,25 @@ DATASET="$(zfs-poolname)/root/default"
 mountNasCache=1
 Fy=0
 cleanup=0
-sysUpdate=1
-flatUpdate=1
-rebootOnSuccess=0
-poweroffOnSuccess=0
-skipSnapshots=0
-noConfirm=0
 downloadPackages=0
+firmwareUpdate=0
+flatUpdate=1
+noConfirm=0
+poweroffOnSuccess=0
+rebootOnSuccess=0
+skipSnapshots=0
+sysUpdate=1
 
 while [[ $# -gt 0 ]]; do
   case $1 in
+    c|cleanup|clearPkgCaches)
+      cleanup=1
+      shift
+      ;;
+    f|firmwareUpdate)
+      firmwareUpdate=1
+      shift
+      ;;
     n|noMount)
       # Don't mount external package cache.
       mountNasCache=0
@@ -29,11 +38,6 @@ while [[ $# -gt 0 ]]; do
     u|updatePkgDb)
       # Update pkgfile database.
       Fy=1
-      shift
-      ;;
-    c|clearPkgCaches)
-      # Clear package caches.
-      cleanup=1
       shift
       ;;
     noUpdate)
@@ -118,11 +122,19 @@ fi
 
 if [[ $cleanup -eq 1 ]]; then
   #paru -Sc # Debatable whether I ever want to use this. The keep-last-three-versions hook works nicely.
+  echo -e "\nflatpak cleanup..."
   cmd="flatpak uninstall --unused --delete-data"
   if [[ $noConfirm -eq 1 ]]; then
     cmd="$cmd --assumeyes"
   fi
   eval "$cmd"
+fi
+
+
+if [[ $firmwareUpdate -eq 1 ]]; then
+  echo -e "\nupdateing firmwares..."
+  sudo fwupdmgr refresh || true # exists non-zero if metadata is up to date
+  sudo fwupdmgr update
 fi
 
 if [[ $downloadPackages -eq 1 ]]; then
