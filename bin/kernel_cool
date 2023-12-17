@@ -1,13 +1,15 @@
 #! /usr/bin/env bash
 # TODO - lots of this stuff should be global, make use of yadm globally
 
+CURRENT_ZFS=$(pacman --color never -Q zfs-linux | cut -d\  -f 2)
+CURRENT_KERNEL=$(uname -r)
 # does installed kernel version match running kernel version?
 if [[ "$( uname -r | tr "." "-" )" = "$( pacman -Q linux | cut  -d\  -f2 | tr "." "-")" ]]; then
-    echo "yes ($(uname -r))"
+    echo "yes ($CURRENT_KERNEL, zfs $CURRENT_ZFS)"
 else
     echo -e "no"
     echo -e "installed: $(pacman -Q linux | cut  -d\  -f2)"
-    echo -e "running:   $(uname -r)"
+    echo -e "running:   $CURRENT_KERNEL (zfs $CURRENT_ZFS)"
 fi
 
 BOOT_TIMESTAMP=$(/usr/bin/date --date "$(uptime --since)" +"%s")
