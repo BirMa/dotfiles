@@ -13,3 +13,15 @@ grep --extended-regexp --quiet 'display:\s*none\s*!important;\s{3,}' "$XDG_DATA_
 #/usr/bin/steam -console "$@"
 #/usr/bin/steam -console -dev -tcp "$@"
 /usr/bin/steam "$@"
+
+
+if false; then
+  echo "update steam"
+  # sudo chattr -i ./chunk~2dcc5aaf7.css
+  steam
+  cp -v ./chunk~2dcc5aaf7.css{,_orig}
+  nvim ./chunk~2dcc5aaf7.css # fix it
+  okteta ./chunk~2dcc5aaf7.css # file needs to end with 0x2A 0x2F (set okteta to non-overwrite-mode)
+  # sudo chattr +i ./chunk~2dcc5aaf7.css
+  steam
+fi
