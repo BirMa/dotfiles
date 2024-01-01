@@ -18,6 +18,6 @@ do
   if [[ -n "$SUFFIX" ]]; then
     name="${name}_$SUFFIX"
   fi
-  sudo zfs snapshot "$name" || echo "creating '$name' failed"
+  sudo zfs snapshot "$name" || echo "creating '$name' failed with code $?"
 done
 
