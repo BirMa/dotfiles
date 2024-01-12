@@ -24,12 +24,22 @@ if [[ $KERNEL_TIMESTAMP -ge $BOOT_TIMESTAMP ]]; then
     echo -e "(kernel newer than boot time)"
 fi
 
-curl --silent 'https://archzfs.com/archzfs/x86_64/' \
-    | hq a attr href \
-    | sed --regexp-extended --silent \
-    's/^zfs-linux-([0-9]+)\.([0-9]+)\.([0-9]+)_([0-9]+)\.([0-9]+)\.([0-9]+).*\.tar\.zst$/supported kernel: \4.\5.\6 (for zfs \1.\2.\3)/gp'
+TMP_C="/tmp/tmp_kernel_cool"
+if [[ -f "$TMP_C" && $(( $(/usr/bin/date +%s) - $(stat --format=%W "$TMP_C") )) -gt $(( 12*60*60 )) ]]; then
+    rm "$TMP_C"
+fi
+if [[ ! -f "$TMP_C" ]]; then
+    curl --silent 'https://archzfs.com/archzfs/x86_64/' \
+        | hq a attr href \
+        | sed --regexp-extended --silent \
+        's/^zfs-linux-([0-9]+)\.([0-9]+)\.([0-9]+)_([0-9]+)\.([0-9]+)\.([0-9]+).*\.tar\.zst$/supported kernel: \4.\5.\6 (for zfs \1.\2.\3)/gp' \
+        >"$TMP_C"
 
-curl --silent 'https://geo.mirror.pkgbuild.com/core/os/x86_64/' \
-    | hq a attr href \
-    | sed --regexp-extended --silent \
-    's/^linux-([0-9]+\.[0-9]+\.[0-9]+\.arch.*)-x86_64\.pkg\.tar\.zst$/available kernel: \1/gp'
+    curl --silent 'https://geo.mirror.pkgbuild.com/core/os/x86_64/' \
+        | hq a attr href \
+        | sed --regexp-extended --silent \
+        's/^linux-([0-9]+\.[0-9]+\.[0-9]+\.arch.*)-x86_64\.pkg\.tar\.zst$/available kernel: \1/gp' \
+        >>"$TMP_C"
+fi
+cat "$TMP_C"
+
