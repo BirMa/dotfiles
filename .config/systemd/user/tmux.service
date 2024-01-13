@@ -1,0 +1,10 @@
+[Unit]
+Description=Start tmux in detached session for user %I
+
+[Service]
+Type=forking
+ExecStart=/home/mw/bin/tmux new-session -n %u@%H -s %u@%H -d
+ExecStop=/home/mw/bin/tmux kill-session -t %u@%H
+
+[Install]
+WantedBy=userAutostart.target
