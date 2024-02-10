@@ -635,10 +635,10 @@ globalkeys = awful.util.table.join(
   awful.key({ modkey, altkey, "Shift"    }, "g",        function () awful.spawn(editor_cmd2_root) end),
 
   -- switch to german keyboard layout
-  awful.key({ modkey,                    }, "F11",      function () awful.spawn(kbd_switch2_de_cmd) end),
+  -- awful.key({ modkey,                    }, "F11",      function () awful.spawn(kbd_switch2_de_cmd) end),
 
   -- switch to russian keyboard layout
-  awful.key({ modkey, "Shift"            }, "F12",      function () awful.spawn(kbd_switch2_ru_cmd) end),
+  -- awful.key({ modkey, "Shift"            }, "F12",      function () awful.spawn(kbd_switch2_ru_cmd) end),
 
   -- switch to us international keyboard layout
   awful.key({ modkey,                    }, "F12",      function () awful.spawn(kbd_switch2_us_cmd) end),
@@ -689,6 +689,7 @@ globalkeys = awful.util.table.join(
     awful.spawn(terminal_cmd.." --title monitoring_nvtop nvtop")
     os.execute("sleep .2")
     awful.spawn(terminal_cmd.." --title monitoring_htop htop")
+    awful.spawn("psensor")
   end),
 
   -- launch thunderbird
@@ -965,6 +966,9 @@ awful.rules.rules = {
   }, {
     rule       = { class = "kitty", name  = "monitoring_nvtop" },
     properties = { screen = screen_tools, tag = tag_monitoring },
+  }, {
+    rule       = { class = "Psensor" },
+    properties = { screen = screen_tools, tag = tag_monitoring, maximized_vertical = true, maximized_horizontal = true },
   }, {
     rule       = { class = "kitty", name  = "monitoring_htop" },
     properties = { screen = screen_tools, tag = tag_monitoring },
