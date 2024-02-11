@@ -689,6 +689,7 @@ globalkeys = awful.util.table.join(
     awful.spawn(terminal_cmd.." --title monitoring_nvtop nvtop")
     os.execute("sleep .2")
     awful.spawn(terminal_cmd.." --title monitoring_htop htop")
+    os.execute("sleep .2")
     awful.spawn("psensor")
   end),
 
@@ -968,7 +969,7 @@ awful.rules.rules = {
     properties = { screen = screen_tools, tag = tag_monitoring },
   }, {
     rule       = { class = "Psensor" },
-    properties = { screen = screen_tools, tag = tag_monitoring, maximized_vertical = true, maximized_horizontal = true },
+    properties = { screen = screen_tools, tag = tag_monitoring, maximized = true },
   }, {
     rule       = { class = "kitty", name  = "monitoring_htop" },
     properties = { screen = screen_tools, tag = tag_monitoring },
