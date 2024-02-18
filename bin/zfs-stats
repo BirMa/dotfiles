@@ -2,14 +2,13 @@
 
 POOL="$(zfs-poolname)"
 
-sudo zpool status -v
-echo
 sudo zfs list -t snapshot
 echo
-sudo zfs list -o usedsnap,name,used,avail,refer,mountpoint | grep 'MOUNTPOINT$\| /\S*$'
+sudo zpool status -v
 echo
+sudo zfs list -o usedsnap,name,used,avail,refer,mountpoint | grep 'MOUNTPOINT$\| /\S*$'
 sudo zpool list -o cap,free,alloc,size
-echo "AVAIL: $(sudo zfs list -H -o available $POOL)"
+echo "AVAIL: $(sudo zfs list -H -o available "$POOL")"
 echo
 sudo zpool get -H -o name,property,value dedup "$POOL"
 sudo zfs get -H -o name,property,value compressratio "$POOL"
