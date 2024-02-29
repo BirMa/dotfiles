@@ -1,13 +1,19 @@
 #! /usr/bin/env bash
 # TODO - lots of this stuff should be global, make use of yadm globally
 
-CURRENT_ZFS=$(pacman --color never -Q zfs-linux | cut -d\  -f 2)
+set -euo pipefail
+
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+RESET=$(tput sgr0)
+
+CURRENT_ZFS=$(pacman --color never -Q zfs-linux 2>/dev/null || pacman --color never -Q zfs-linux-git | cut -d\  -f 2)
 CURRENT_KERNEL=$(uname -r)
 # does installed kernel version match running kernel version?
 if [[ "$( uname -r | tr "." "-" )" = "$( pacman -Q linux | cut  -d\  -f2 | tr "." "-")" ]]; then
-    echo -e "yes:     $CURRENT_KERNEL (zfs $CURRENT_ZFS)"
+    echo -e "${GREEN}yes${RESET}:     $CURRENT_KERNEL (zfs $CURRENT_ZFS)"
 else
-    echo -e "no"
+    echo -e "${RED}no${RESET}"
     echo -e "disk:    $(pacman -Q linux | cut  -d\  -f2)"
     echo -e "running: $CURRENT_KERNEL (zfs $CURRENT_ZFS)"
 fi
@@ -24,23 +30,33 @@ if [[ $KERNEL_TIMESTAMP -ge $BOOT_TIMESTAMP ]]; then
     echo -e "(kernel newer than boot time)"
 fi
 
-TMP_C="/tmp/kernel_cool.tmp"
-if [[ -f "$TMP_C" && $(( $(/usr/bin/date +%s) - $(stat --format=%W "$TMP_C") )) -gt $(( 12*60*60 )) ]]; then
-    rm "$TMP_C"
-fi
-if [[ ! -f "$TMP_C" ]]; then
-    curl --silent 'https://archzfs.com/archzfs/x86_64/' \
-        | hq a attr href \
-        | sed --regexp-extended --silent \
-        's/^zfs-linux-([0-9]+\.[0-9]+(\.[0-9]+)?)_([0-9]+\.[0-9]+\.([0-9]+)?.*)-x86_64.pkg.tar.zst$/openzfs: \3 (zfs \1)/gp' \
-        | sed --regexp-extended --silent 's/-1\ \(/\ \(/gp' \
-        >"$TMP_C"
+TMP_Z="$XDG_CACHE_HOME/kernel_cool.z.tmp"
+TMP_M="$XDG_CACHE_HOME/kernel_cool.m.tmp"
+function reload {
+  if [[ -f "$1" && $(( $(/usr/bin/date +%s) - $(stat --format=%W "$1") )) -gt $(( 24*60*60 )) ]]; then
+    rm "$1"
+  fi
+  if [[ ! -f "$1" ]]; then
+    curl --silent "$2" >"$1"
+  fi
+}
+reload "$TMP_Z" 'https://archzfs.com/archzfs/x86_64/'
+reload "$TMP_M" 'https://geo.mirror.pkgbuild.com/core/os/x86_64/'
 
-    curl --silent 'https://geo.mirror.pkgbuild.com/core/os/x86_64/' \
-        | hq a attr href \
-        | sed --regexp-extended --silent \
-        's/^linux-([0-9]+\.[0-9]+\.[0-9]+\.arch.*)-x86_64\.pkg\.tar\.zst$/kernel:  \1/gp' \
-        >>"$TMP_C"
-fi
-cat "$TMP_C"
+echo -n "archzfs: "
+# e.g.: zfs-linux-2.2.3_6.7.6.arch1.1-1-x86_64.pkg.tar.zst
+hq a attr href <"$TMP_Z" \
+  | perl -n -e \
+  'print if s/^zfs-linux-([0-9]+\.[0-9]+(?:\.[0-9]+)?)_([0-9]+\.[0-9]+\.(?:[0-9]+)?.*?)(?:-\d+)?-x86_64.pkg.tar.zst$/\2 (zfs \1)/'
+
+echo -n "zfs-git: "
+# e.g.: zfs-linux-git-2024.02.16.r9031.gaf4da5ccf2_6.7.6.arch1.1-1-x86_64.pkg.tar.zst
+hq a attr href <"$TMP_Z" \
+  | perl -n -e \
+  'print if s/^zfs-linux-git-(20\d\d\.\d\d\.\d\d\.r\d+\.g[a-z0-9]+)_([0-9]+\.[0-9]+\.(?:[0-9]+)?.*?)(?:-\d+)?-x86_64.pkg.tar.zst$/\2 (zfs \1)/'
+
+echo -n "kernel:  "
+hq a attr href <"$TMP_M" \
+  | perl -n -e \
+  'print if s/^linux-([0-9]+\.[0-9]+\.[0-9]+\.arch.*)-x86_64\.pkg\.tar\.zst$/\1/'
 
