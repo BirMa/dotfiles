@@ -157,13 +157,14 @@ fi
 if [[ $flatUpdate -eq 1 ]]; then
   echo -e "\nflatpak update..."
 
-  cmd="flatpak update"
+  cmd="flatpak update --verbose --ostree-verbose"
   if [[ $noConfirm -eq 1 ]]; then
     cmd="$cmd --assumeyes"
   fi
 
   eval "$cmd"
   RET=$( test $? -eq "$RET" -a $? -eq 0; echo $? )
+  echo -e "\nflatpak update done"
 fi
 
 if [[ "$RET" -eq 0 ]]; then
@@ -174,3 +175,5 @@ if [[ "$RET" -eq 0 ]]; then
     systemctl poweroff
   fi
 fi
+
+echo -e "\nall done"
