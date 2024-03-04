@@ -7,15 +7,17 @@ RED=$(tput setaf 1)
 GREEN=$(tput setaf 2)
 RESET=$(tput sgr0)
 
-CURRENT_ZFS=$(pacman --color never -Q zfs-linux 2>/dev/null || pacman --color never -Q zfs-linux-git | cut -d\  -f 2)
-CURRENT_KERNEL=$(uname -r)
+INSTALLED_ZFS=$( ( pacman --color never -Q zfs-linux zfs-linux-git 2>/dev/null || true ) | cut -d\  -f 2)
+INSTALLED_KERNEL=$(pacman -Q linux | cut  -d\  -f 2)
+RUNNING_KERNEL=$(uname -r)
+RUNNING_ZFS=$(zfs version | perl -n -e 'print if s/^zfs-([0-9].*)/\1/')
 # does installed kernel version match running kernel version?
 if [[ "$( uname -r | tr "." "-" )" = "$( pacman -Q linux | cut  -d\  -f2 | tr "." "-")" ]]; then
-    echo -e "${GREEN}yes${RESET}:     $CURRENT_KERNEL (zfs $CURRENT_ZFS)"
+    echo -e "${GREEN}yes${RESET}:     $RUNNING_KERNEL (zfs $RUNNING_ZFS) == $INSTALLED_KERNEL (zfs $INSTALLED_ZFS)"
 else
     echo -e "${RED}no${RESET}"
-    echo -e "disk:    $(pacman -Q linux | cut  -d\  -f2)"
-    echo -e "running: $CURRENT_KERNEL (zfs $CURRENT_ZFS)"
+    echo -e "disk:    $INSTALLED_KERNEL (zfs $INSTALLED_ZFS)"
+    echo -e "running: $RUNNING_KERNEL (zfs $RUNNING_ZFS)"
 fi
 
 BOOT_TIMESTAMP=$(/usr/bin/date --date "$(uptime --since)" +"%s")
@@ -43,7 +45,8 @@ function reload {
 reload "$TMP_Z" 'https://archzfs.com/archzfs/x86_64/'
 reload "$TMP_M" 'https://geo.mirror.pkgbuild.com/core/os/x86_64/'
 
-echo -n "archzfs: "
+echo -e "\navailable:"
+echo -n "    zfs: "
 # e.g.: zfs-linux-2.2.3_6.7.6.arch1.1-1-x86_64.pkg.tar.zst
 hq a attr href <"$TMP_Z" \
   | perl -n -e \
