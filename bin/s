@@ -30,7 +30,7 @@ while [[ $# -gt 0 ]]; do
       firmwareUpdate=1
       shift
       ;;
-    n|noMount)
+    m|noMount)
       # Don't mount external package cache.
       mountNasCache=0
       shift
@@ -40,7 +40,7 @@ while [[ $# -gt 0 ]]; do
       Fy=1
       shift
       ;;
-    noUpdate)
+    n|noUpdate)
       sysUpdate=0
       flatUpdate=0
       shift
