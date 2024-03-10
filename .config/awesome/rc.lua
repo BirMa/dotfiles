@@ -422,7 +422,10 @@ awful.screen.connect_for_each_screen(
     -- Set non-default tag layouts
     if s.index == screen_tools then
       awful.tag.find_by_name(s, tag_soundtools).layout = awful.layout.suit.tile
-      awful.tag.find_by_name(s, tag_monitoring).layout = awful.layout.suit.tile.bottom
+
+      t_mon = awful.tag.find_by_name(s, tag_monitoring)
+      t_mon.layout = awful.layout.suit.tile.bottom
+      t_mon.master_width_factor = 0.80
     end
 
     -- Create a promptbox for each screen
