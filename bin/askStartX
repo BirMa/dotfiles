@@ -1,0 +1,20 @@
+#! /usr/bin/bash
+
+# Ask to start X. Skip if already on X, or not on tty1.
+if [[ -z "$DISPLAY" ]] && [[ -n "$XDG_VTNR" ]] && [[ "$XDG_VTNR" -le 1 ]]; then
+  zfs-stats
+  if [[ "$(yesNoQ --default yes --timeout 5 'startx [Y|n] ? ';echo $?)" -eq 0 ]]; then
+    echo -e 'starting X...\n'
+    exec startx >> ~/logs/startx.log
+  fi
+#elif [[ -z "$TMUX" ]]; then
+#  #exec tmux
+#  notify-send 'ask...'
+#  if [[ $(tmux -q has-session &>/dev/null) ]]; then
+#    notify-send 'attached...'
+#    exec tmux attach-session -d
+#  else
+#    notify-send 'new session'
+#    exec tmux new-session -n"$USER" -s"$USER"@"$HOSTNAME"
+#  fi
+fi
