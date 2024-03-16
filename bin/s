@@ -143,8 +143,9 @@ fi
 
 RET=0
 if [[ $sysUpdate -eq 1 ]]; then
-  #cmd="paru -Syu --devel --needed" #https://github.com/Morganamilo/paru/pull/1100
-  cmd="paru -Syu --devel"
+  #paru maintianer isn't confident in --needed with paru, let's see if any issues arise... https://github.com/Morganamilo/paru/pull/1100
+  cmd="paru -Syu --devel --needed"
+  #cmd="paru -Syu --devel"
   if [[ $noConfirm -eq 1 ]]; then
     cmd="$cmd --noconfirm"
   fi
