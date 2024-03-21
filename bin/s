@@ -138,7 +138,7 @@ if [[ $firmwareUpdate -eq 1 ]]; then
 fi
 
 if [[ $downloadPackages -eq 1 ]]; then
-  paru --needed --devel --downloadonly --noconfirm -Syu
+  paru --needed --downloadonly --noconfirm --mode=repo -Syu
 fi
 
 RET=0
