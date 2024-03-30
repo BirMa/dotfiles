@@ -22,7 +22,8 @@ sysUpdate=1
 
 while [[ $# -gt 0 ]]; do
   case $1 in
-    c|cleanup|clearPkgCaches)
+    c|clean|cleanup|clearPkgCaches)
+      Fy=1 # not cleanup, but useful to do every now and then
       cleanup=1
       shift
       ;;
