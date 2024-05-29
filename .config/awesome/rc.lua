@@ -140,9 +140,11 @@ tag_communication = "3"
 
 if os.getenv("USER") == 'md' then
   screen_tools = 2
-  more_tools = true
+  screen_extra = 3
+  -- more_tools = true
 else
   screen_tools = 1
+  screen_extra = 1
 end
 
 -- Wibar width (right-click menu on taskbar)
@@ -935,7 +937,7 @@ awful.rules.rules = {
     rule       = { class = "Xmessage" },
     properties = { floating = true },
   }, {
-    rule       = { class = "Pavucontrol"},
+    rule       = { class = "pavucontrol"},
     properties = { screen = screen_tools, tag = tag_soundtools },
   }, {
     rule       = { class = "SonoBus"},
@@ -973,7 +975,7 @@ awful.rules.rules = {
     properties = { screen = screen_tools, tag = tag_monitoring },
   }, {
     rule       = { class = "Psensor" },
-    properties = { screen = screen_tools, tag = tag_monitoring, maximized = true },
+    properties = { screen = screen_extra, tag = tag_monitoring, maximized = true },
   }, {
     rule       = { class = "kitty", name  = "monitoring_htop" },
     properties = { screen = screen_tools, tag = tag_monitoring },
