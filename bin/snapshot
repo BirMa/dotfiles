@@ -16,7 +16,7 @@ declare -a DATASETS=(
 
 for i in "${DATASETS[@]}"
 do
-  name="$i@routine_$(/usr/bin/date +%Y-%m-%d-%a)"
+  name="$i@routine_$(/usr/bin/date --utc +%Y-%m-%d-%a_%H:%M:%S)"
   if [[ -n "$SUFFIX" ]]; then
     name="${name}_$SUFFIX"
   fi

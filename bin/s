@@ -91,7 +91,7 @@ done
 # caching sudo, so pressing ctrl+c doesn't trigger 'snapshot creation failure' errors further down
 sudo echo || exit 202
 
-SNAPPSHOT_NAME="$DATASET@pre_update_$(date +%Y-%m-%d-%a)"
+SNAPPSHOT_NAME="$DATASET@pre_update_$(/usr/bin/date --utc +%Y-%m-%d-%a_%H:%M:%S)"
 if [[ $skipSnapshots -ne 1 ]];then
   if sudo zfs snapshot "$SNAPPSHOT_NAME"; then
     echo ":: snapshot created: $SNAPPSHOT_NAME"
@@ -133,8 +133,8 @@ fi
 
 
 if [[ $firmwareUpdate -eq 1 ]]; then
-  echo -e "\nupdateing firmwares..."
-  sudo fwupdmgr refresh || true # exists non-zero if metadata is up to date
+  echo -e "\nupdating firmwares..."
+  sudo fwupdmgr refresh || true # exits with non-zero if metadata is up to date
   sudo fwupdmgr update
 fi
 
