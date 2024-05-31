@@ -25,6 +25,7 @@ while [[ $# -gt 0 ]]; do
     c|clean|cleanup|clearPkgCaches)
       Fy=1 # not cleanup, but useful to do every now and then
       cleanup=1
+      skipSnapshots=1
       shift
       ;;
     f|firmwareUpdate)
@@ -44,6 +45,7 @@ while [[ $# -gt 0 ]]; do
     n|noUpdate)
       sysUpdate=0
       flatUpdate=0
+      skipSnapshots=1
       shift
       ;;
     r|reboot)
