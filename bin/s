@@ -1,40 +1,67 @@
 #!/bin/bash
-# TODO: Port this to python.
-# TODO: Add 'sudo paccheck --recursive --quiet --file-properties --md5sum --sha256sum --require-mtree --db-files --depends --files '
-# TODO: Add 'pacman -Fy # Download global package database including file lists of ALL packages' (useful for pacman -Fl do-i-need-this-package?)
 
 set -o nounset
 set -o errexit
 
 DATASET="$(zfs-poolname)/root/default"
 
-mountNasCache=1
 Fy=0
 cleanup=0
 downloadPackages=0
 firmwareUpdate=0
-flatUpdate=1
 noConfirm=0
+paccheck=0
 poweroffOnSuccess=0
 rebootOnSuccess=0
-skipSnapshots=0
+
+flatUpdate=1
+mountNasCache=1
+snapshot=1
 sysUpdate=1
 
+unsetDefaultFlags=0 # whether cmd args are given, if not set default flags below
 while [[ $# -gt 0 ]]; do
+  unsetDefaultFlags=1
   case $1 in
     c|clean|cleanup|clearPkgCaches)
       Fy=1 # not cleanup, but useful to do every now and then
       cleanup=1
-      skipSnapshots=1
+      snapshot=0
+      shift
+      ;;
+    check)
+      paccheck=1
       shift
       ;;
     f|firmwareUpdate)
       firmwareUpdate=1
+      snapshot=0
       shift
       ;;
     m|noMount)
       # Don't mount external package cache.
       mountNasCache=0
+      unsetDefaultFlags=0
+      shift
+      ;;
+    n|noUpdate)
+      flatUpdate=0
+      sysUpdate=0
+      unsetDefaultFlags=0
+      shift
+      ;;
+    p|poweroff|shutdown)
+      # Poweroff after successfully updating.
+      poweroffOnSuccess=1
+      noConfirm=1
+      unsetDefaultFlags=0
+      shift
+      ;;
+    r|reboot)
+      # Reboot after successfully updating.
+      rebootOnSuccess=1
+      noConfirm=1
+      unsetDefaultFlags=0
       shift
       ;;
     u|updatePkgDb)
@@ -42,44 +69,30 @@ while [[ $# -gt 0 ]]; do
       Fy=1
       shift
       ;;
-    n|noUpdate)
-      sysUpdate=0
-      flatUpdate=0
-      skipSnapshots=1
-      shift
-      ;;
-    r|reboot)
-      # Reboot after successfully updating.
-      rebootOnSuccess=1
-      noConfirm=1
-      shift
-      ;;
-    p|poweroff|shutdown)
-      # Poweroff after successfully updating.
-      poweroffOnSuccess=1
-      noConfirm=1
-      shift
-      ;;
     s|skipSnapshots)
       # Don't make new or delete old snapshots.
-      skipSnapshots=1
-      shift
-      ;;
-    y|yes)
-      # Suppress interactivity and assume yes for update processes
-      noConfirm=1
+      snapshot=0
+      unsetDefaultFlags=0
       shift
       ;;
     w|downloadOnly)
       # Don't install anything; just download packages into cache; only applies to pacman
       downloadPackages=1
-      skipSnapshots=1
+      snapshot=0
       flatUpdate=0
       sysUpdate=0
+      unsetDefaultFlags=0
+      shift
+      ;;
+    y|yes)
+      # Suppress interactivity and assume yes for update processes
+      noConfirm=1
+      unsetDefaultFlags=0
       shift
       ;;
     -|--)
       # No more parameters, shift the - and stop processing them
+      unsetDefaultFlags=0
       shift
       break
       ;;
@@ -90,11 +103,32 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ $unsetDefaultFlags -eq 1 ]]; then
+  flatUpdate=0
+  mountNasCache=0
+  snapshot=0
+  sysUpdate=0
+fi
+
+#echo "Fy: $Fy"
+#echo "cleanup: $cleanup"
+#echo "downloadPackages: $downloadPackages"
+#echo "firmwareUpdate: $firmwareUpdate"
+#echo "noConfirm: $noConfirm"
+#echo "paccheck: $paccheck"
+#echo "poweroffOnSuccess: $poweroffOnSuccess"
+#echo "rebootOnSuccess: $rebootOnSuccess"
+
+#echo "flatUpdate: $flatUpdate"
+#echo "mountNasCache: $mountNasCache"
+#echo "snapshot: $snapshot"
+#echo "sysUpdate: $sysUpdate"
+
 # caching sudo, so pressing ctrl+c doesn't trigger 'snapshot creation failure' errors further down
 sudo echo || exit 202
 
 SNAPPSHOT_NAME="$DATASET@pre_update_$(/usr/bin/date --utc +%Y-%m-%d-%a_%H:%M:%S)"
-if [[ $skipSnapshots -ne 1 ]];then
+if [[ $snapshot -eq 1 ]]; then
   if sudo zfs snapshot "$SNAPPSHOT_NAME"; then
     echo ":: snapshot created: $SNAPPSHOT_NAME"
     # TODO - this fails if there is no pre_update_* snapshot
@@ -133,6 +167,10 @@ if [[ $cleanup -eq 1 ]]; then
   eval "$cmd"
 fi
 
+if [[ $paccheck -eq 1 ]]; then
+  echo -e "\nchecking package permissions, etc...."
+  sudo paccheck --recursive --quiet --file-properties --md5sum --sha256sum --require-mtree --db-files --depends --files
+fi
 
 if [[ $firmwareUpdate -eq 1 ]]; then
   echo -e "\nupdating firmwares..."
