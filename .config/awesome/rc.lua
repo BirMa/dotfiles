@@ -316,6 +316,17 @@ Volume.toggleMute = function ()
   fd:close()
 end
 
+VolumePAsourceName = "@DEFAULT_SOURCE@"
+MicrophoneToggleMute = function ()
+  local fd = assert(io.popen("pactl " .. " set-source-mute " .. VolumePAsourceName .. " toggle"))
+  fd:close()
+
+  local fds = assert(io.popen("pactl " .. " get-source-mute " .. VolumePAsourceName))
+  local muteStatus = fds:read("l")
+  fds:close()
+  naughty.notify({ preset = naughty.config.presets.notify, title = "Microphone " .. muteStatus, text = "" })
+end
+
 -- cpu usage graph
 Mycpuwidget = wibox.widget.graph()
 Mycpuwidget:set_width(75)
@@ -563,9 +574,10 @@ Globalkeys = Awful.util.table.join(
   ),
 
   -- Sound control
-  awful.key({                            }, "XF86AudioRaiseVolume", function () volume.up() end),
-  awful.key({                            }, "XF86AudioLowerVolume", function () volume.down() end),
-  awful.key({                            }, "XF86AudioMute", function () volume.toggleMute() end),
+  Awful.key({                            }, "XF86AudioRaiseVolume", function () Volume.up() end),
+  Awful.key({                            }, "XF86AudioLowerVolume", function () Volume.down() end),
+  Awful.key({                            }, "XF86AudioMute", function () Volume.toggleMute() end),
+  Awful.key({ "Shift"                    }, "XF86AudioMute", function () MicrophoneToggleMute() end),
 
   -- Media player controls
   Awful.key({                            }, "XF86AudioPlay",  function () Awful.spawn(audio_play) end),
