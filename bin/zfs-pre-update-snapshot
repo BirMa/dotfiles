@@ -1,0 +1,17 @@
+#! /usr/bin/env sh
+
+DATASET="$(zpool get -H bootfs | cut -f1)/root/default"
+SNAPPSHOT_NAME="$DATASET@pre_update_$(/usr/bin/date --utc +%Y-%m-%d-%a_%H:%M:%S)"
+if sudo zfs snapshot "$SNAPPSHOT_NAME"; then
+  echo ":: snapshot created: $SNAPPSHOT_NAME"
+  # TODO - this fails if there is no pre_update_* snapshot
+  if sudo zfs list -t snapshot -H -o name | grep -v "^$SNAPPSHOT_NAME$" | grep "^$DATASET@pre_update_.*" | xargs --max-args=1 sudo zfs destroy; then
+    echo ":: old snapshots destroyed"
+  else
+    echo ":: destruction of old snapshots failed"
+    exit 201
+  fi
+else
+  echo ":: snapshot creation failed: $SNAPPSHOT_NAME"
+fi
+
