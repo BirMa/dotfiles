@@ -3,8 +3,6 @@
 set -o nounset
 set -o errexit
 
-DATASET="$(zfs-poolname)/root/default"
-
 Fy=0
 cleanup=0
 downloadPackages=0
@@ -16,7 +14,7 @@ rebootOnSuccess=0
 
 flatUpdate=1
 mountNasCache=1
-snapshot=1
+#snapshot=0
 sysUpdate=1
 
 unsetDefaultFlags=0 # whether cmd args are given, if not set default flags below
@@ -26,7 +24,7 @@ while [[ $# -gt 0 ]]; do
     c|clean|cleanup|clearPkgCaches)
       Fy=1 # not cleanup, but useful to do every now and then
       cleanup=1
-      snapshot=0
+      #snapshot=0
       shift
       ;;
     check)
@@ -35,7 +33,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     f|firmwareUpdate)
       firmwareUpdate=1
-      snapshot=0
+      #snapshot=0
       shift
       ;;
     m|noMount)
@@ -69,16 +67,16 @@ while [[ $# -gt 0 ]]; do
       Fy=1
       shift
       ;;
-    s|skipSnapshots)
-      # Don't make new or delete old snapshots.
-      snapshot=0
-      unsetDefaultFlags=0
-      shift
-      ;;
+#    s|skipSnapshots)
+#      # Don't make new or delete old snapshots.
+#      snapshot=0
+#      unsetDefaultFlags=0
+#      shift
+#      ;;
     w|downloadOnly)
       # Don't install anything; just download packages into cache; only applies to pacman
       downloadPackages=1
-      snapshot=0
+      #snapshot=0
       flatUpdate=0
       sysUpdate=0
       unsetDefaultFlags=0
@@ -106,7 +104,7 @@ done
 if [[ $unsetDefaultFlags -eq 1 ]]; then
   flatUpdate=0
   mountNasCache=0
-  snapshot=0
+  #snapshot=0
   sysUpdate=0
 fi
 
@@ -121,27 +119,15 @@ fi
 
 #echo "flatUpdate: $flatUpdate"
 #echo "mountNasCache: $mountNasCache"
-#echo "snapshot: $snapshot"
+####echo "snapshot: $snapshot"
 #echo "sysUpdate: $sysUpdate"
 
 # caching sudo, so pressing ctrl+c doesn't trigger 'snapshot creation failure' errors further down
 sudo echo || exit 202
 
-SNAPPSHOT_NAME="$DATASET@pre_update_$(/usr/bin/date --utc +%Y-%m-%d-%a_%H:%M:%S)"
-if [[ $snapshot -eq 1 ]]; then
-  if sudo zfs snapshot "$SNAPPSHOT_NAME"; then
-    echo ":: snapshot created: $SNAPPSHOT_NAME"
-    # TODO - this fails if there is no pre_update_* snapshot
-    if sudo zfs list -t snapshot -H -o name | grep -v "^$SNAPPSHOT_NAME$" | grep "^$DATASET@pre_update_.*" | xargs --max-args=1 sudo zfs destroy; then
-      echo ":: old snapshots destroyed"
-    else
-      echo ":: destruction of old snapshots failed"
-      exit 201
-    fi
-  else
-    echo ":: snapshot creation failed: $SNAPPSHOT_NAME"
-  fi
-fi
+#if [[ $snapshot -eq 1 ]]; then
+#  zfs-pre-update-snapshot
+#fi
 
 if [[ $mountNasCache -eq 1 ]]; then
   #(n > /dev/null) && (echo ':: nas-pkg-cache mounted';) || (echo ':: nas-pkg-cache mount failed'; exit 1;)
