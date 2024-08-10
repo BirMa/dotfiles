@@ -1,0 +1,5 @@
+#! /usr/bin/env sh
+
+export RUST_BACKTRACE=1
+export RUST_LOG=info
+exec ~/sonstige/projects/coding_rust/nvfancontrol/target/debug/nvfancontrol

@@ -1,0 +1,44 @@
+#! /bin/bash
+#
+# return $EXIT_NOSTART if:
+# No app was started.
+# Becaus it's already running.
+#
+# return $EXIT_START if:
+# A app was started.
+# Because it was not running or we killed its predecessor in this script.
+
+EXIT_START=1
+EXIT_NOSTART=0
+
+app="$1"
+kill_="$2"
+allPidsOverride="$3" # space separated list of pids to kill/consider (if pidof will not suffice for e.g. scripts)
+usesDisplay=${IS_GUI:-true}
+appsFound=0
+
+allPids=${allPidsOverride:-$(pidof "$app")}
+
+for pid in $allPids; do
+  if [[ $usesDisplay != "true" || "$($(which cat) /proc/"$pid"/environ | $(which tr) '\0' '\n' | $(which grep) '^DISPLAY=' | sed 's|DISPLAY\=||')" = "$DISPLAY" ]]; then
+    echo -n "post xinitrc: $app already running"
+    if [[ $usesDisplay = "true" ]] ; then echo " (for this display)"; else echo; fi
+    if [[ "$kill_" = "true" ]]; then
+      echo "post xinitrc: killing $app"
+      kill "$pid"
+    else
+      echo "post xinitrc: NOT killing $app"
+      (( appsFound="$appsFound+1" ))
+    fi
+  else
+    echo "post xinitrc: running $app found, but not for this display, ignoring it..."
+  fi
+done
+
+if [[ $appsFound -le 0 ]]; then
+  echo "post xinitrc: starting $app"
+  "autostart_${app}" &
+  exit $EXIT_START
+fi
+
+exit $EXIT_NOSTART

@@ -1,0 +1,5 @@
+#! /bin/sh
+
+~/share/conky/conky-1.9.0/src/conky -c "$XDG_CONFIG_HOME/conky/conkyrc_top" &
+~/share/conky/conky-1.9.0/src/conky -c "$XDG_CONFIG_HOME/conky/conkyrc_mid" &
+~/share/conky/conky-1.9.0/src/conky -c "$XDG_CONFIG_HOME/conky/conkyrc_bot" &
