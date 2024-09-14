@@ -31,7 +31,7 @@ while [[ $# -gt 0 ]]; do
       paccheck=1
       shift
       ;;
-    f|firmwareUpdate)
+    f|firmware|firmwareUpdate)
       firmwareUpdate=1
       #snapshot=0
       shift
@@ -82,7 +82,7 @@ while [[ $# -gt 0 ]]; do
       unsetDefaultFlags=0
       shift
       ;;
-    y|yes)
+    y|noconfirm|yes)
       # Suppress interactivity and assume yes for update processes
       noConfirm=1
       unsetDefaultFlags=0
@@ -185,10 +185,10 @@ fi
 if [[ $flatUpdate -eq 1 ]]; then
   echo -e "\nflatpak update..."
 
-  cmd="flatpak update --verbose --ostree-verbose"
-  if [[ $noConfirm -eq 1 ]]; then
-    cmd="$cmd --assumeyes"
-  fi
+  cmd="flatpak update --assumeyes"
+#  if [[ $noConfirm -eq 1 ]]; then
+#    cmd="$cmd --assumeyes"
+#  fi
 
   eval "$cmd"
   RET=$( test $? -eq "$RET" -a $? -eq 0; echo $? )
@@ -197,9 +197,11 @@ fi
 
 if [[ "$RET" -eq 0 ]]; then
   if [[ $rebootOnSuccess -eq 1 ]]; then
+    echo -e "\nrebooting..."
     systemctl reboot
   fi
   if [[ $poweroffOnSuccess -eq 1 ]]; then
+    echo -e "\nshutting down..."
     systemctl poweroff
   fi
 fi
