@@ -49,7 +49,7 @@ theme.taglist_squares_unsel = THEMEROOT .. "taglist/squarew.png"
 -- menu_[border_color|border_width]
 theme.menu_submenu_icon = THEMEROOT .. "submenu.png"
 theme.menu_height = 20
-theme.menu_width  = 120
+theme.menu_width  = 140
 
 -- You can add as many variables as
 -- you wish and access them by using
