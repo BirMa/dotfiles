@@ -6,26 +6,38 @@ set -euo pipefail
 export STEAM_RUNTIME=1
 export GTK2_RC_FILES="/usr/share/themes/Breeze-Dark/gtk-2.0/gtkrc" # Systray rightclick menu uses gtk2 it appears
 
+START_WITH_CONSOLE=0
+
 # /home/md/.local/share/Steam/steamui/css/sp.css
 #libraryhome_UpdatesContainer_17uEB
 # This used to work: .libraryhome_UpdatesContainer_17uEB{display: none !important; ....
 # File size needs to be same, use okteta for editing and dhex for neat binary diffs
-grep --extended-regexp --quiet 'display:\s*none\s*!important;\s{3,}' "$XDG_DATA_HOME"/Steam/steamui/css/*.css ||
-  notify-send --urgency=critical '"What'\''new" is back!               ' 'Valve is at it again\nFUUUUUU'
+#                               display:   none   !important;
+grep --extended-regexp --quiet '\{display:\s*none\s*!important;\}?\s{3,}' "$XDG_DATA_HOME"/Steam/steamui/css/*.css \
+  ||
+  {
+    notify-send --urgency=normal --expire-time=5000 '"What'\''new" is back!               ' 'FUUUUUU\nstarting with console'
+    START_WITH_CONSOLE=1
+  }
 
-/usr/bin/steam "$@"
+if [[ START_WITH_CONSOLE -eq 1 ]]; then
+  # gamemoderun currently segfaults within lsof every 10 seconds because the injected code doesn't handle some dbus error correctly...
+  /usr/bin/steam -console -dev -tcp "$@" # -dev -tcp allows opening dev tools with F12
+else
+  /usr/bin/steam "$@"
+fi
+
 #/usr/bin/steam-runtime -no-cef-sandbox "$@" # sometimes workaround for webview issues (like black views)
-#/usr/bin/steam -console "$@"
-#/usr/bin/steam -console -dev -tcp "$@"
-
+#/usr/bin/steam -console "$@" # just the console
 
 if false; then
   echo "update steam"
   # sudo chattr -i ./chunk~2dcc5aaf7.css
   cd /home/md/.local/share/Steam/steamui/css/
   cp -v ./chunk~2dcc5aaf7.css{,_orig}
-  nvim ./chunk~2dcc5aaf7.css # fix it
-  okteta ./chunk~2dcc5aaf7.css # file needs to end with 0x2A 0x2F (set okteta to non-overwrite-mode)
+  # body>div:nth-child(1)>div>div:nth-child(3)>div:nth-child(2)>div:nth-child(2)>div:nth-child(1)>div:nth-child(2)>div:nth-child(3)>div:nth-child(1)>div>div:nth-child(1)>div>div:nth-child(1){display:none!important;}
+  nvim ./chunk~2dcc5aaf7.css # fix it: used to be libraryhome_UpdatesContainer_17uEB, now it's some Id. Grab it from the steam dev console.
+  okteta ./chunk~2dcc5aaf7.css # file needs to end with 0x2A 0x2F (pres INSERT to set okteta to non-overwrite-mode)
   # sudo chattr +i ./chunk~2dcc5aaf7.css
   steam
 fi
