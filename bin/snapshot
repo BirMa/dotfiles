@@ -22,4 +22,3 @@ do
   fi
   sudo zfs snapshot "$name" || echo "creating '$name' failed with code $?"
 done
-
