@@ -1,3 +1,8 @@
+-- TODO - https://stackoverflow.com/a/44594187
+-- try to make apps believe they're maximized without them taking up the whole screen
+-- maybe also https://stackoverflow.com/questions/29670635/awesome-wm-does-not-maximize-windows-anymore
+
+
 -- Standard awesome library
 Gears = require("gears")
 Awful = require("awful")
@@ -141,10 +146,12 @@ tag_communication = "3"
 if os.getenv("USER") == 'md' then
   screen_tools = 2
   screen_extra = 3
+  multi_screens = true
   -- more_tools = true
 else
   screen_tools = 1
   screen_extra = 1
+  multi_screens = false
 end
 
 -- Wibar width (right-click menu on taskbar)
@@ -438,7 +445,12 @@ Awful.screen.connect_for_each_screen(
 
       local t_mon = Awful.tag.find_by_name(s, tag_monitoring)
       t_mon.layout = Awful.layout.suit.tile.bottom
-      t_mon.master_width_factor = 0.80
+      t_mon.master_width_factor = 0.76
+    end
+    if multi_screens and s.index == screen_extra then
+      local t_mon = Awful.tag.find_by_name(s, tag_monitoring)
+      t_mon.layout = Awful.layout.suit.tile
+      t_mon.master_width_factor = 0.30
     end
 
     -- Create a promptbox for each screen
@@ -987,7 +999,7 @@ Awful.rules.rules = {
     properties = { screen = screen_tools, tag = tag_monitoring },
   }, {
     rule       = { class = "Psensor" },
-    properties = { screen = screen_extra, tag = tag_monitoring, maximized = true },
+    properties = { screen = screen_extra, tag = tag_monitoring },
   }, {
     rule       = { class = "kitty", name  = "monitoring_htop" },
     properties = { screen = screen_tools, tag = tag_monitoring },
