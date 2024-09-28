@@ -5,7 +5,8 @@ set -o nounset
 unalias -a
 
 PROCNAME="$1"
-MASK="${2:-"0-31"}"
+MAX_PROC=$(( $(nproc) - 1 ))
+MASK="${2:-"0-$MAX_PROC"}"
 
 for pid in $(pidof "$PROCNAME"); do
   taskset -cp "$MASK" "$pid" || true
