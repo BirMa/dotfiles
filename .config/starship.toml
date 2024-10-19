@@ -1,24 +1,35 @@
+
 format = """
+$status\
 $username\
 $hostname\
 $directory\
+$sudo\
+$jobs\
 $git_branch\
 $git_commit\
 $git_state\
 $git_status\
 $cmd_duration\
 $line_break\
-$python\
-$status$character"""
+$character"""
+
+[status]
+format = "[$int( $common_meaning)$signal_name]($style) "
+#success_symbol = "[0](bright-black)" # Can't style success_symbol
+pipestatus_separator = "|"
+disabled = false
 
 [username]
 show_always = true
-format = " [$user@](bold green)"
+format = "[$user@](bold green)"
+disabled = false
 
 [hostname]
 trim_at = ''
 format = '[$ssh_symbol$hostname](bold green):'
 ssh_only = false
+disabled = false
 
 [directory]
 style = "bold blue"
@@ -26,22 +37,34 @@ repo_root_style = "underline bold blue"
 truncate_to_repo = false
 truncation_length = 0
 truncation_symbol = '…'
+disabled = false
+
+[sudo]
+# format = "[$symbol]($style)"
+format = '[as $symbol]($style)'
+symbol = "🔑 "
+disabled = true # sudo module is broken, always shows the "cached" icon
+
+[jobs]
+disabled = false
 
 [character]
 success_symbol = "[❯](green)"
-error_symbol = "[❯](red)"
+error_symbol = "[❯](green)"
 vimcmd_symbol = "[❮](green)"
+disabled = false
 
 [git_branch]
 format = "[$symbol$branch(:$remote_branch)]($style)"
 symbol = ""
 style = "bright-black"
+disabled = false
 
 [git_commit]
 format = "[($tag  $hash)]($style) "
-style = "bold green"
+style = "bright-black"
 commit_hash_length = 5
-tag_symbol = " 🏷 "
+tag_symbol = "  "
 only_detached = false
 tag_disabled = false
 disabled = false
@@ -56,19 +79,14 @@ staged = "󰐗 "
 renamed = " "
 deleted = "󰧧 "
 stashed = "≡"
+disabled = false
 
 [git_state]
 format = '\([$state( $progress_current/$progress_total)]($style)\) '
 style = "yellow"
+disabled = false
 
 [cmd_duration]
 format = "[$duration]($style) "
 style = "yellow"
-
-[python]
-format = "[$virtualenv]($style) "
-style = "bright-black"
-
-[status]
-format = "[$status]($style) "
 disabled = false
