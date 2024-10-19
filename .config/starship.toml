@@ -1,0 +1,74 @@
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_commit\
+$git_state\
+$git_status\
+$cmd_duration\
+$line_break\
+$python\
+$status$character"""
+
+[username]
+show_always = true
+format = " [$user@](bold green)"
+
+[hostname]
+trim_at = ''
+format = '[$ssh_symbol$hostname](bold green):'
+ssh_only = false
+
+[directory]
+style = "bold blue"
+repo_root_style = "underline bold blue"
+truncate_to_repo = false
+truncation_length = 0
+truncation_symbol = '…'
+
+[character]
+success_symbol = "[❯](green)"
+error_symbol = "[❯](red)"
+vimcmd_symbol = "[❮](green)"
+
+[git_branch]
+format = "[$symbol$branch(:$remote_branch)]($style)"
+symbol = ""
+style = "bright-black"
+
+[git_commit]
+format = "[($tag  $hash)]($style) "
+style = "bold green"
+commit_hash_length = 5
+tag_symbol = " 🏷 "
+only_detached = false
+tag_disabled = false
+disabled = false
+
+[git_status]
+format = "[[($conflicted$untracked$modified$staged$renamed$deleted)](fg:blue)($ahead_behind$stashed)](bright-black)"
+style = "cyan"
+conflicted = "󱐌"
+untracked = "󰐙 "
+modified = " "
+staged = "󰐗 "
+renamed = " "
+deleted = "󰧧 "
+stashed = "≡"
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "yellow"
+
+[cmd_duration]
+format = "[$duration]($style) "
+style = "yellow"
+
+[python]
+format = "[$virtualenv]($style) "
+style = "bright-black"
+
+[status]
+format = "[$status]($style) "
+disabled = false
