@@ -8,7 +8,9 @@ PROCNAME="$1"
 MAX_PROC=$(( $(nproc) - 1 ))
 MASK="${2:-"0-$MAX_PROC"}"
 
-for pid in $(pidof "$PROCNAME"); do
+PIDS="$(pidof "$PROCNAME")"
+
+for pid in "$PIDS"; do
   taskset -cp "$MASK" "$pid" || true
   for tid in $(/usr/bin/ls "/proc/$pid/task"); do
     taskset -cp "$MASK" "$tid" || true
