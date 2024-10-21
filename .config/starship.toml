@@ -26,11 +26,12 @@ disabled = false
 
 [hostname]
 trim_at = ''
-format = '[$ssh_symbol$hostname](bold green):'
+format = '[$ssh_symbol$hostname](bold green)[:](bold blue)'
 ssh_only = false
 disabled = false
 
 [directory]
+format = "[$path]($style)[$read_only]($read_only_style)"
 style = "bold blue"
 repo_root_style = "underline bold blue"
 truncate_to_repo = false
@@ -39,8 +40,7 @@ truncation_symbol = '…'
 disabled = false
 
 [sudo]
-# format = "[$symbol]($style)"
-format = '[as $symbol]($style)'
+format = "[( $symbol)]($style)"
 symbol = "🔑 "
 disabled = true # sudo module is broken, always shows the "cached" icon
 
@@ -60,17 +60,16 @@ style = "bright-black"
 disabled = false
 
 [git_commit]
-format = "[($tag  $hash)]($style) "
+format = "[( $tag)(  $hash)]($style)"
 style = "bright-black"
 commit_hash_length = 5
-tag_symbol = "  "
+tag_symbol = " "
 only_detached = false
 tag_disabled = false
 disabled = false
 
 [git_status]
-format = "[[($conflicted$untracked$modified$staged$renamed$deleted)](fg:blue)($ahead_behind$stashed)](bright-black)"
-style = "cyan"
+format = "[( $ahead_behind)](bright-black)[( $conflicted$untracked$modified$staged$renamed$deleted)](fg:blue)[( $stashed)](bright-black)"
 conflicted = "󱐌"
 untracked = "󰐙 "
 modified = " "
@@ -86,6 +85,6 @@ style = "yellow"
 disabled = false
 
 [cmd_duration]
-format = "[$duration]($style) "
+format = "[( $duration)]($style) "
 style = "yellow"
 disabled = false
