@@ -10,18 +10,18 @@ Awful.rules = require("awful.rules")
 require("awful.autofocus")
 
 -- Widget and layout library
-wibox = require("wibox")
+local wibox = require("wibox")
 
 -- Theme handling library
-beautiful = require("beautiful")
+local beautiful = require("beautiful")
 
 -- Notification library
-naughty = require("naughty")
-menubar = require("menubar")
-hotkeys_popup = require("awful.hotkeys_popup").widget
+local naughty = require("naughty")
+local menubar = require("menubar")
+local hotkeys_popup = require("awful.hotkeys_popup").widget
 
 -- widgets
-vicious = require("vicious")
+local vicious = require("vicious")
 
 
 --- {{{ Early overrides
@@ -52,7 +52,7 @@ do
     if in_error then return end
     in_error = true
 
-    errorstring = tostring(err) .. "\n\n" .. debug.traceback()
+    local errorstring = tostring(err) .. "\n\n" .. debug.traceback()
 
     naughty.notify({ preset = naughty.config.presets.critical,
     title = "Error occurred",
@@ -69,92 +69,92 @@ end
 
 -- {{{ Variable definitions
 -- Tagnames
-tagnames = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 'a', 'b', 'c', }
+local tagnames = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 'a', 'b', 'c', }
 
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init(Awful.util.getdir("config") .. "/themes/my_default_2.0/theme.lua")
 
 -- Application launches
-editor_cmd1 = "nvim-qt"
-editor_cmd2 = "kitty -e nvim"
-editor_cmd2_root = "kitty -e 'bash -c \"sudo -i nvim\"'"
-filemanager_cmd1 = "thunar"
-filemanager_cmd1_root = "gksudo thunar"
-filemanager_cmd2 = "spacefm"
-filemanager_cmd2_root = "spacefm"
-terminal_cmd = "kitty"
-terminal_cmd_root = "kitty -e bash -c 'su -l root'"
-terminal_cmd_stanalone = "kitty"
-firefox_cmd_defaultProfile = "firefox -P entertainment --new-instance"
-firefox_cmd_ProfileManager = "firefox --ProfileManager --new-instance"
+local editor_cmd1 = "nvim-qt"
+local editor_cmd2 = "kitty -e nvim"
+local editor_cmd2_root = "kitty -e 'bash -c \"sudo -i nvim\"'"
+local filemanager_cmd1 = "thunar"
+local filemanager_cmd1_root = "gksudo thunar"
+local filemanager_cmd2 = "spacefm"
+local filemanager_cmd2_root = "spacefm"
+local terminal_cmd = "kitty"
+local terminal_cmd_root = "kitty -e bash -c 'su -l root'"
+local terminal_cmd_stanalone = "kitty"
+local firefox_cmd_defaultProfile = "firefox -P entertainment --new-instance"
+local firefox_cmd_ProfileManager = "firefox --ProfileManager --new-instance"
 
 -- Tool launches
-inc_display_brightness = "light -A 4"
-inc_display_brightness_fine = "light -r -A 1"
-inc_display_brightness_max = "light -S 100"
-dec_display_brightness = "light -U 4"
-dec_display_brightness_fine = "light -r -U 1"
-dec_display_brightness_zero = "light -S 0"
-maxBrightness_cmd = "light -S 100"
-minBrightness_cmd = "light -r -S 1"
-stop_focused_process = "bash -c 'kill -STOP $(xdotool getwindowpid $(xdotool getwindowfocus))'"
-cont_focused_process = "bash -c 'kill -CONT $(xdotool getwindowpid $(xdotool getwindowfocus))'"
-audio_play = "playerctl --all-players play"
-audio_pause = "playerctl --all-players pause"
-audio_playpause = "playerctl --all-players play-pause"
-audio_next = "playerctl --all-players next"
-audio_prev = "playerctl --all-players previous"
+local inc_display_brightness = "light -A 4"
+local inc_display_brightness_fine = "light -r -A 1"
+local inc_display_brightness_max = "light -S 100"
+local dec_display_brightness = "light -U 4"
+local dec_display_brightness_fine = "light -r -U 1"
+local dec_display_brightness_zero = "light -S 0"
+local maxBrightness_cmd = "light -S 100"
+local minBrightness_cmd = "light -r -S 1"
+local stop_focused_process = "bash -c 'kill -STOP $(xdotool getwindowpid $(xdotool getwindowfocus))'"
+local cont_focused_process = "bash -c 'kill -CONT $(xdotool getwindowpid $(xdotool getwindowfocus))'"
+local audio_play = "playerctl --all-players play"
+local audio_pause = "playerctl --all-players pause"
+local audio_playpause = "playerctl --all-players play-pause"
+local audio_next = "playerctl --all-players next"
+local audio_prev = "playerctl --all-players previous"
 
 -- Commands to switch to specific keyboard layout for this session.
 -- TODO perhaps these should be more like this: localectl set-x11-keymap us pc104 altgr-intl
-kbd_switch2_de_cmd  = "setxkbmap -model pc104 -layout de -option"
-kbd_switch2_ru_cmd  = "setxkbmap -model pc104 -layout ru -option"
-kbd_switch2_us_cmd  = "setxkbmap -model pc104 -layout us -variant altgr-intl -option"
-kbd_switch2_apl_cmd = "setxkbmap -model pc104 -layout us,apl -variant altgr-intl -option grp:rctrl_toggle"
+local kbd_switch2_de_cmd  = "setxkbmap -model pc104 -layout de -option"
+local kbd_switch2_ru_cmd  = "setxkbmap -model pc104 -layout ru -option"
+local kbd_switch2_us_cmd  = "setxkbmap -model pc104 -layout us -variant altgr-intl -option"
+local kbd_switch2_apl_cmd = "setxkbmap -model pc104 -layout us,apl -variant altgr-intl -option grp:rctrl_toggle"
 -- kbd_switch2_de_cmd = "localectl set-x11-keymap de pc104"
 -- kbd_switch2_ru_cmd = "localectl set-x11-keymap ru pc104"
 -- kbd_switch2_us_cmd = "localectl set-x11-keymap us pc104 altgr-intl"
 
-eject_cmd = "eject -T"
+local eject_cmd = "eject -T"
 
-killallFlash_cmd = "killall plugin-container"
-killallFirefox_cmd = "killall firefox"
+local killallFlash_cmd = "killall plugin-container"
+local killallFirefox_cmd = "killall firefox"
 
-lock_screen_cmd = "slock"
-
-
-BootNextWIN_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=auto-windows"
-BootNextLINUX_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=arch.conf"
-BootNextMENU_cmd = "systemctl reboot --boot-loader-menu=60s"
-BootNextBIOS_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=auto-reboot-to-firmware-setup"
-BootNextEFISHELL_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=auto-efi-shell"
+local lock_screen_cmd = "slock"
 
 
-suspend_disk_cmd = "suspend_disk"
-suspend_ram_cmd = "suspend_ram"
-shutdown_cmd = "systemctl poweroff"
-reboot_cmd  = "systemctl reboot"
-kexec_cmd = "sudo kexec --append=\"$(cat /proc/cmdline)\" /boot/vmlinuz-linux"
+local bootNextWIN_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=auto-windows"
+local bootNextLINUX_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=arch.conf"
+local bootNextMENU_cmd = "systemctl reboot --boot-loader-menu=60s"
+local bootNextBIOS_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=auto-reboot-to-firmware-setup"
+local bootNextEFISHELL_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=auto-efi-shell"
 
-etc_shutdown_cmd = "gksudo K_etc_shutdown"
-lock_suspend_disk_cmd = "suspend_disk l"
-lock_suspend_ram_cmd = "suspend_ram l"
 
-notifySendWmNameAndWmClass_cmd = "notifySendWmNameAndWmClass"
+local suspend_disk_cmd = "suspend_disk"
+local suspend_ram_cmd = "suspend_ram"
+local shutdown_cmd = "systemctl poweroff"
+local reboot_cmd  = "systemctl reboot"
+local kexec_cmd = "sudo kexec --append=\"$(cat /proc/cmdline)\" /boot/vmlinuz-linux"
 
-tag_soundtools = "1"
-tag_monitoring = "2"
-tag_communication = "3"
+local etc_shutdown_cmd = "gksudo K_etc_shutdown"
+local lock_suspend_disk_cmd = "suspend_disk l"
+local lock_suspend_ram_cmd = "suspend_ram l"
 
+local notifySendWmNameAndWmClass_cmd = "notifySendWmNameAndWmClass"
+
+local tag_soundtools = "1"
+local tag_monitoring = "2"
+local tag_communication = "3"
+
+
+local screen_tools = 1
+local screen_monitoring = 1
+local multi_screens = false
 if os.getenv("USER") == 'md' then
   screen_tools = 2
   screen_monitoring = 3
   multi_screens = true
   -- more_tools = true
-else
-  screen_tools = 1
-  screen_monitoring = 1
-  multi_screens = false
 end
 
 -- Wibar width (right-click menu on taskbar)
@@ -166,8 +166,8 @@ local wibar_width = 550
 -- If you do not like this or do not have such a key,
 -- I suggest you to remap Mod4 to another key using xmodmap or other tools.
 -- However, you can use another modifier like Mod1, but it may interact with others.
-modkey = "Mod4"
-altkey = "Mod1"
+local modkey = "Mod4"
+local altkey = "Mod1"
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
 Awful.layout.layouts = {
@@ -260,11 +260,11 @@ Mytoolsmenu = {
 }
 
 Myplusmenu = {
-  { "bootNext|WIN", BootNextWIN_cmd },
-  { "bootNext|LINUX", BootNextLINUX_cmd },
-  { "bootNext|MENU", BootNextMENU_cmd },
-  { "bootNext|BIOS", BootNextBIOS_cmd },
-  { "bootNext|EFI", BootNextEFISHELL_cmd },
+  { "bootNext|WIN", bootNextWIN_cmd },
+  { "bootNext|LINUX", bootNextLINUX_cmd },
+  { "bootNext|MENU", bootNextMENU_cmd },
+  { "bootNext|BIOS", bootNextBIOS_cmd },
+  { "bootNext|EFI", bootNextEFISHELL_cmd },
   { "etc,shutdown", etc_shutdown_cmd },
   { "lock,hibernate", lock_suspend_disk_cmd },
   { "lock,suspend", lock_suspend_ram_cmd },
