@@ -117,9 +117,6 @@ local kbd_switch2_apl_cmd = "setxkbmap -model pc104 -layout us,apl -variant altg
 
 local eject_cmd = "eject -T"
 
-local killallFlash_cmd = "killall plugin-container"
-local killallFirefox_cmd = "killall firefox"
-
 local lock_screen_cmd = "slock"
 
 
@@ -134,7 +131,6 @@ local suspend_disk_cmd = "suspend_disk"
 local suspend_ram_cmd = "suspend_ram"
 local shutdown_cmd = "systemctl poweroff"
 local reboot_cmd  = "systemctl reboot"
-local kexec_cmd = "sudo kexec --append=\"$(cat /proc/cmdline)\" /boot/vmlinuz-linux"
 
 local etc_shutdown_cmd = "gksudo K_etc_shutdown"
 local lock_suspend_disk_cmd = "suspend_disk l"
@@ -279,7 +275,6 @@ Mymainmenu = Awful.menu ({
     { "suspend", suspend_ram_cmd },
     { "shutdown", shutdown_cmd },
     { "reboot", reboot_cmd },
-    -- { "kexec", kexec_cmd },
   }
 })
 
@@ -687,9 +682,6 @@ Globalkeys = Awful.util.table.join(
 
   -- kill firefox
   --Awful.key({ modkey, "Shift"            }, "f",        function () Awful.spawn(killallFirefox_cmd) end),
-
-  -- kill firefox flashplugins
-  -- Awful.key({ modkey, "Shift"            }, "v",        function () Awful.spawn(killallFlash_cmd) end),
 
   -- launch htop
   --Awful.key({ "Control", "Shift"         }, "Escape",   function () Awful.spawn(terminal_cmd_stanalone .. " -e htop") end),
