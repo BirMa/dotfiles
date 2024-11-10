@@ -148,12 +148,12 @@ tag_communication = "3"
 
 if os.getenv("USER") == 'md' then
   screen_tools = 2
-  screen_extra = 3
+  screen_monitoring = 3
   multi_screens = true
   -- more_tools = true
 else
   screen_tools = 1
-  screen_extra = 1
+  screen_monitoring = 1
   multi_screens = false
 end
 
@@ -453,10 +453,10 @@ Awful.screen.connect_for_each_screen(
       t_mon.layout = Awful.layout.suit.tile.bottom
       t_mon.master_width_factor = 0.76
     end
-    if multi_screens and s.index == screen_extra then
+    if multi_screens and s.index == screen_monitoring then
       local t_mon = Awful.tag.find_by_name(s, tag_monitoring)
       t_mon.layout = Awful.layout.suit.tile
-      t_mon.master_width_factor = 0.30
+      t_mon.master_width_factor = 0.55
     end
 
     -- Create a promptbox for each screen
@@ -1002,16 +1002,16 @@ Awful.rules.rules = {
     properties = { screen = screen_tools, tag = "4" },
   }, {
     rule       = { class = "kitty", name  = "monitoring_nvtop" },
-    properties = { screen = screen_tools, tag = tag_monitoring },
+    properties = { screen = screen_monitoring, tag = tag_monitoring },
   }, {
     rule       = { class = "Psensor" },
-    properties = { screen = screen_extra, tag = tag_monitoring },
+    properties = { screen = screen_monitoring, tag = tag_monitoring },
   }, {
     rule       = { class = "kitty", name  = "monitoring_htop" },
-    properties = { screen = screen_tools, tag = tag_monitoring },
+    properties = { screen = screen_monitoring, tag = tag_monitoring },
   }, {
     rule       = { class = "kitty", name  = "monitoring_nethogs" },
-    properties = { screen = screen_tools, tag = tag_monitoring },
+    properties = { screen = screen_monitoring, tag = tag_monitoring },
   }
   -- Preset rules TODO: maybe merge some of these
   -- { -- All clients will match this rule.
