@@ -123,8 +123,11 @@ killallFirefox_cmd = "killall firefox"
 lock_screen_cmd = "slock"
 
 
-bootNextWIN_cmd = "K_setBootnext 0000"
-bootNextLINUX_cmd = "K_setBootnext 0002"
+BootNextWIN_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=auto-windows"
+BootNextLINUX_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=arch.conf"
+BootNextMENU_cmd = "systemctl reboot --boot-loader-menu=60s"
+BootNextBIOS_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=auto-reboot-to-firmware-setup"
+BootNextEFISHELL_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=auto-efi-shell"
 
 
 suspend_disk_cmd = "suspend_disk"
@@ -257,8 +260,11 @@ Mytoolsmenu = {
 }
 
 Myplusmenu = {
-  { "bootNext|WIN", bootNextWIN_cmd },
-  { "bootNext|LINUX", bootNextLINUX_cmd },
+  { "bootNext|WIN", BootNextWIN_cmd },
+  { "bootNext|LINUX", BootNextLINUX_cmd },
+  { "bootNext|MENU", BootNextMENU_cmd },
+  { "bootNext|BIOS", BootNextBIOS_cmd },
+  { "bootNext|EFI", BootNextEFISHELL_cmd },
   { "etc,shutdown", etc_shutdown_cmd },
   { "lock,hibernate", lock_suspend_disk_cmd },
   { "lock,suspend", lock_suspend_ram_cmd },
