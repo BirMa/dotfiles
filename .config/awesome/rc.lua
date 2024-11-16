@@ -120,11 +120,11 @@ local eject_cmd = "eject -T"
 local lock_screen_cmd = "slock"
 
 
-local bootNextWIN_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=auto-windows"
-local bootNextLINUX_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=arch.conf"
-local bootNextMENU_cmd = "systemctl reboot --boot-loader-menu=60s"
-local bootNextBIOS_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=auto-reboot-to-firmware-setup"
-local bootNextEFISHELL_cmd = "systemctl reboot --boot-loader-menu=0s --boot-loader-entry=auto-efi-shell"
+local bootNextWIN_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=auto-windows"
+local bootNextLINUX_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=arch.conf"
+local bootNextMENU_cmd = "systemctl reboot --boot-loader-menu=300s"
+local bootNextBIOS_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=auto-reboot-to-firmware-setup"
+local bootNextEFISHELL_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=auto-efi-shell"
 
 
 local suspend_disk_cmd = "suspend_disk"
