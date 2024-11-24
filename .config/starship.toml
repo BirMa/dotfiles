@@ -27,6 +27,7 @@ disabled = false
 [hostname]
 trim_at = ''
 format = '[$ssh_symbol$hostname](bold green)[:](bold blue)'
+ssh_symbol = '🌐'
 ssh_only = false
 disabled = false
 
