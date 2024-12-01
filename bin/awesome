@@ -1,0 +1,2 @@
+#! /bin/sh
+exec >~/logs/awesome.log 2>~/logs/awesome_err.log /usr/bin/awesome -c "${HOME}"/.config/awesome/rc.lua
