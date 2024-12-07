@@ -1,0 +1,17 @@
+#! /usr/bin/sh
+
+# example
+# echo "counting down..."; repeatN 'echo $(( 4-idx ))' 3 1; echo "Go!"
+# echo "counting up!"; repeatN 'echo $idx' 20
+
+cmd=${1:-"echo 'Hello world!'"}
+count=${2:-10}
+delay=${3:-""}
+export idx # silence SC2034
+
+for idx in $(seq "$count"); do
+  eval "$cmd"
+  if [ -n "$delay" ]; then
+    sleep "$delay"
+  fi
+done
