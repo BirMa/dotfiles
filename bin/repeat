@@ -1,0 +1,15 @@
+#! /usr/bin/sh
+
+set -o errexit
+set -o nounset
+
+cmd=${1:-"echo 'Hello world!'"}
+delay=${2:-""}
+
+while true
+do 
+    $cmd || ( echo "$cmd failed!"; exit )
+    if [ -n "$delay" ]; then
+        sleep "$delay"
+    fi
+done
