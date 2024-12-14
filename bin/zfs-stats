@@ -15,4 +15,4 @@ sudo zpool get -H -o name,property,value dedup "$POOL"
 sudo zfs get -H -o name,property,value compressratio "$POOL"
 echo
 sudo zpool iostat -l
-zfs --version
+zfs --version | paste --serial
