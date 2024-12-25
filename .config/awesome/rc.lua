@@ -711,14 +711,17 @@ Globalkeys = Awful.util.table.join(
   Awful.key({ modkey,                    }, "F"..tag_soundtools,    function () Awful.spawn("pavucontrol") end),
 
   -- launch monitoring
+  Awful.key({ modkey                     }, "F"..tag_monitoring,    function ()
+    -- sleep in between to make window positions deterministic
+    Awful.spawn(terminal_cmd.." --title monitoring_btop btop"); os.execute("sleep .2")
+    Awful.spawn("psensor"); os.execute("sleep .2")
+  end),
   Awful.key({ modkey, "Shift"            }, "F"..tag_monitoring,    function ()
-    Awful.spawn(terminal_cmd.." --title monitoring_nethogs nethogs_suid")
-    os.execute("sleep .2") -- sleep to make window positions deterministic
-    Awful.spawn(terminal_cmd.." --title monitoring_nvtop nvtop")
-    os.execute("sleep .2")
-    Awful.spawn(terminal_cmd.." --title monitoring_htop htop")
-    os.execute("sleep .2")
-    Awful.spawn("psensor")
+    -- sleep in between to make window positions deterministic
+    Awful.spawn(terminal_cmd.." --title monitoring_nethogs nethogs_suid"); os.execute("sleep .2")
+    Awful.spawn(terminal_cmd.." --title monitoring_iotop sudo iotop"); os.execute("sleep .2")
+    -- Awful.spawn(terminal_cmd.." --title monitoring_nvtop nvtop"); os.execute("sleep .2")
+    -- Awful.spawn(terminal_cmd.." --title monitoring_htop htop"); os.execute("sleep .2")
   end),
 
   -- launch thunderbird
@@ -1003,6 +1006,12 @@ Awful.rules.rules = {
     properties = { screen = screen_monitoring, tag = tag_monitoring },
   }, {
     rule       = { class = "kitty", name  = "monitoring_nethogs" },
+    properties = { screen = screen_monitoring, tag = tag_monitoring },
+  }, {
+    rule       = { class = "kitty", name  = "monitoring_btop" },
+    properties = { screen = screen_monitoring, tag = tag_monitoring },
+  }, {
+    rule       = { class = "kitty", name  = "monitoring_iotop" },
     properties = { screen = screen_monitoring, tag = tag_monitoring },
   }
   -- Preset rules TODO: maybe merge some of these
