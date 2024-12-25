@@ -2,17 +2,17 @@
 
 POOL="$(zfs-poolname)"
 
-sudo zfs list -t snapshot
+zfs list -t snapshot
 echo
-sudo zpool status -v
+zpool status -v
 echo
-sudo zfs list -o usedsnap,name,used,avail,refer,mountpoint | grep 'MOUNTPOINT$\| /\S*$'
+zfs list -o usedsnap,name,used,avail,refer,mountpoint | grep 'MOUNTPOINT$\| /\S*$'
 # alloc: actualy used+reserved (e.g. raid stuff)+metadata
-sudo zpool list -o cap,free,alloc,size
-echo "AVAIL: $(sudo zfs list -H -o available "$POOL")"
+zpool list -o cap,free,alloc,size
+echo "AVAIL: $(zfs list -H -o available "$POOL")"
 echo
-sudo zpool get -H -o name,property,value dedup "$POOL"
-sudo zfs get -H -o name,property,value compressratio "$POOL"
+zpool get -H -o name,property,value dedup "$POOL"
+zfs get -H -o name,property,value compressratio "$POOL"
 echo
-sudo zpool iostat -l
+zpool iostat -l
 zfs --version | paste --serial
