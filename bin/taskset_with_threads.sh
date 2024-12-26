@@ -1,4 +1,5 @@
 #! /usr/bin/env sh
+# example: $0 firefox 1
 
 set -o errexit
 set -o nounset

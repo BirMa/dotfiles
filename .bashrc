@@ -20,6 +20,8 @@ if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integr
 
 [[ -s "$XDG_CONFIG_HOME/broot/launcher/bash/br" ]] && source "$XDG_CONFIG_HOME/broot/launcher/bash/br"
 
+if which starship &>/dev/null; then eval "$(starship init bash)"; fi
+
 # user specific aliases
 alias v='$HOME/bin/_vid'
 alias heroes_3_shell_with_prefix='export WINEPREFIX="$HOME/.local/share/Lutris_Games/gog/heroes-of-might-and-magic-iii" && cd "$WINEPREFIX/drive_c/GOG Games/HoMM 3 Complete"'
