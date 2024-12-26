@@ -208,7 +208,7 @@ end
 local function client_rel_send(rel_idx)
   local client = client.focus
   local focused = Awful.screen.focused()
-  if client then 
+  if client then
     local scr = client.screen or focused.index
     local sel_idx = focused.selected_tag.index
     local tags = Awful.tag.gettags(scr)
@@ -292,7 +292,7 @@ menubar.utils.terminal = terminal_cmd_stanalone -- Set the terminal for applicat
 
 -- {{{ Keyboard map indicator
 
--- Keyboard map indicator and switcher TODO: This sounds interessting
+-- Keyboard map indicator and switcher TODO: This sounds interesting
 -- Mykeyboardlayout = Awful.widget.keyboardlayout()
 Mykeyboardlayout = Awful.widget.keyboardlayout:new()
 
@@ -451,7 +451,7 @@ Awful.screen.connect_for_each_screen(
     if multi_screens and s.index == screen_monitoring then
       local t_mon = Awful.tag.find_by_name(s, tag_monitoring)
       t_mon.layout = Awful.layout.suit.tile
-      t_mon.master_width_factor = 0.55
+      t_mon.master_width_factor = 0.45
     end
 
     -- Create a promptbox for each screen
