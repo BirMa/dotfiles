@@ -46,7 +46,8 @@ symbol = "🔑 "
 disabled = true # sudo module is broken, always shows the "cached" icon
 
 [jobs]
-disabled = false
+style = "bright-black"
+disabled = false # can be slightly annoying with j, but seems to work fine here
 
 [character]
 success_symbol = "[❯](green)"
