@@ -725,10 +725,10 @@ Globalkeys = Awful.util.table.join(
   end),
 
   -- launch thunderbird
-  Awful.key({ modkey,                    }, "F"..tag_communication, function () Awful.spawn("thunderbird") end),
+  Awful.key({ modkey, "Shift"            }, "F"..tag_communication, function () Awful.spawn("thunderbird") end),
 
   -- launch communication tools
-  Awful.key({ modkey, "Shift"            }, "F"..tag_communication, function ()
+  Awful.key({ modkey,                    }, "F"..tag_communication, function ()
     -- if more_tools == true then Awful.spawn("vencord") end
     Awful.spawn("telegram-desktop");
   end),
