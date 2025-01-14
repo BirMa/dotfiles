@@ -451,7 +451,7 @@ Awful.screen.connect_for_each_screen(
     if multi_screens and s.index == screen_monitoring then
       local t_mon = Awful.tag.find_by_name(s, tag_monitoring)
       t_mon.layout = Awful.layout.suit.tile
-      t_mon.master_width_factor = 0.45
+      t_mon.master_width_factor = 0.35
     end
 
     -- Create a promptbox for each screen
