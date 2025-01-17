@@ -3,6 +3,10 @@
 set -o nounset
 set -o errexit
 
+declare -a repos_to_update=(
+"$HOME/repos/yt-dlp_git"
+)
+
 Fy=0
 cleanup=0
 downloadPackages=0
@@ -11,10 +15,12 @@ noConfirm=0
 paccheck=0
 poweroffOnSuccess=0
 rebootOnSuccess=0
+verbose=0
+
+mountNasCache=1
 
 flatUpdate=1
-mountNasCache=1
-#snapshot=0
+reposUpdate=1
 sysUpdate=1
 
 unsetDefaultFlags=0 # whether cmd args are given, if not set default flags below
@@ -24,7 +30,6 @@ while [[ $# -gt 0 ]]; do
     c|clean|cleanup|clearPkgCaches)
       Fy=1 # not cleanup, but useful to do every now and then
       cleanup=1
-      #snapshot=0
       shift
       ;;
     check)
@@ -33,7 +38,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     f|firmware|firmwareUpdate)
       firmwareUpdate=1
-      #snapshot=0
       shift
       ;;
     m|noMount)
@@ -44,6 +48,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     n|noUpdate)
       flatUpdate=0
+      reposUpdate=0
       sysUpdate=0
       unsetDefaultFlags=0
       shift
@@ -67,17 +72,11 @@ while [[ $# -gt 0 ]]; do
       Fy=1
       shift
       ;;
-#    s|skipSnapshots)
-#      # Don't make new or delete old snapshots.
-#      snapshot=0
-#      unsetDefaultFlags=0
-#      shift
-#      ;;
     w|downloadOnly)
       # Don't install anything; just download packages into cache; only applies to pacman
       downloadPackages=1
-      #snapshot=0
       flatUpdate=0
+      reposUpdate=0
       sysUpdate=0
       unsetDefaultFlags=0
       shift
@@ -104,30 +103,28 @@ done
 if [[ $unsetDefaultFlags -eq 1 ]]; then
   flatUpdate=0
   mountNasCache=0
-  #snapshot=0
+  reposUpdate=0
   sysUpdate=0
 fi
 
-#echo "Fy: $Fy"
-#echo "cleanup: $cleanup"
-#echo "downloadPackages: $downloadPackages"
-#echo "firmwareUpdate: $firmwareUpdate"
-#echo "noConfirm: $noConfirm"
-#echo "paccheck: $paccheck"
-#echo "poweroffOnSuccess: $poweroffOnSuccess"
-#echo "rebootOnSuccess: $rebootOnSuccess"
+if [[ $verbose -eq 1 ]]; then
+  echo "Fy: $Fy"
+  echo "cleanup: $cleanup"
+  echo "downloadPackages: $downloadPackages"
+  echo "firmwareUpdate: $firmwareUpdate"
+  echo "noConfirm: $noConfirm"
+  echo "paccheck: $paccheck"
+  echo "poweroffOnSuccess: $poweroffOnSuccess"
+  echo "rebootOnSuccess: $rebootOnSuccess"
 
-#echo "flatUpdate: $flatUpdate"
-#echo "mountNasCache: $mountNasCache"
-####echo "snapshot: $snapshot"
-#echo "sysUpdate: $sysUpdate"
+  echo "flatUpdate: $flatUpdate"
+  echo "mountNasCache: $mountNasCache"
+  echo "sysUpdate: $sysUpdate"
+  echo "reposUpdate: $reposUpdate"
+fi
 
-# caching sudo, so pressing ctrl+c doesn't trigger 'snapshot creation failure' errors further down
+# caching sudo
 sudo echo || exit 202
-
-#if [[ $snapshot -eq 1 ]]; then
-#  zfs-pre-update-snapshot
-#fi
 
 if [[ $mountNasCache -eq 1 ]]; then
   #(n > /dev/null) && (echo ':: nas-pkg-cache mounted';) || (echo ':: nas-pkg-cache mount failed'; exit 1;)
@@ -193,6 +190,23 @@ if [[ $flatUpdate -eq 1 ]]; then
   eval "$cmd"
   RET=$( test $? -eq "$RET" -a $? -eq 0; echo $? )
   echo -e "\nflatpak update done"
+fi
+
+if [[ $reposUpdate -eq 1 ]]; then
+  echo -e "\nupdating repos..."
+
+  for i in "${repos_to_update[@]}"
+  do
+    if [[ -d "$i" ]]; then
+      (
+      echo "updating $i"
+      cd "$i"
+      git pull --verbose || echo "WARNING: git pull '$i' failed"
+      )
+  else
+    echo "WARNING: '$i' is specified to be updated but doesn't exist"
+    fi
+  done
 fi
 
 if [[ "$RET" -eq 0 ]]; then
