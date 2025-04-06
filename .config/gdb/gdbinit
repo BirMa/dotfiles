@@ -1,2 +1,5 @@
+# grab debuginfo if it's available
 set debuginfod enabled on
+
+# to stop it from asking me to "press c to continue paging"
 set pagination off
