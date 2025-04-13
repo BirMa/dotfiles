@@ -7,9 +7,12 @@ declare -a repos_to_update=(
 "$HOME/repos/yt-dlp_git"
 )
 
+IGNORE_PKGS="--ignore zfs-linux,zfs-linux-git,zfs-linux-headers,zfs-utils,zfs-utils-debug,zfs-utils-git,linux,linux-docs,linux-headers,linux-api-headers,nvidia,nvidia-utils,lib32-nvidia-utils,nvidia-settings,opencl-nvidia,nvidia-open"
+
 Fy=0
 cleanup=0
 downloadPackages=0
+ignorePkgs=0
 firmwareUpdate=0
 noConfirm=0
 paccheck=0
@@ -38,6 +41,12 @@ while [[ $# -gt 0 ]]; do
       ;;
     f|firmware|firmwareUpdate)
       firmwareUpdate=1
+      shift
+      ;;
+    i|ignorePkgs)
+      # Ignore some packages that e..g depend on zfs/linux/etc.
+      ignorePkgs=1
+      unsetDefaultFlags=0
       shift
       ;;
     m|noMount)
@@ -70,6 +79,11 @@ while [[ $# -gt 0 ]]; do
     u|updatePkgDb)
       # Update pkgfile database.
       Fy=1
+      shift
+      ;;
+    v|verbose)
+      verbose=1
+      unsetDefaultFlags=0
       shift
       ;;
     w|downloadOnly)
@@ -111,6 +125,7 @@ if [[ $verbose -eq 1 ]]; then
   echo "Fy: $Fy"
   echo "cleanup: $cleanup"
   echo "downloadPackages: $downloadPackages"
+  echo "ignorePkgs: $ignorePkgs"
   echo "firmwareUpdate: $firmwareUpdate"
   echo "noConfirm: $noConfirm"
   echo "paccheck: $paccheck"
@@ -126,8 +141,9 @@ fi
 # caching sudo
 sudo echo || exit 202
 
+RET=0
+
 if [[ $mountNasCache -eq 1 ]]; then
-  #(n > /dev/null) && (echo ':: nas-pkg-cache mounted';) || (echo ':: nas-pkg-cache mount failed'; exit 1;)
   if [[ $(n > /dev/null) -eq 0 ]]; then
     echo ':: nas-pkg-cache mounted'
   else
@@ -162,19 +178,37 @@ if [[ $firmwareUpdate -eq 1 ]]; then
 fi
 
 if [[ $downloadPackages -eq 1 ]]; then
-  paru --needed --downloadonly --noconfirm --mode=repo -Syu
-fi
-
-RET=0
-if [[ $sysUpdate -eq 1 ]]; then
-  #paru maintianer isn't confident in --needed with paru, let's see if any issues arise... https://github.com/Morganamilo/paru/pull/1100
-  cmd="paru -Syu --devel --needed"
-  #cmd="paru -Syu --devel"
-  if [[ $noConfirm -eq 1 ]]; then
-    cmd="$cmd --noconfirm"
+  echo -e "\nDownloading paru update packages..."
+  cmd="paru --needed -S --refresh --downloadonly --noconfirm --mode=repo"
+  if [[ $ignorePkgs -eq 1 ]]; then
+    read -ra ignore_pkgs_arr <<<"${IGNORE_PKGS}"
+    cmd="$cmd ${ignore_pkgs_arr[*]}"
   fi
   cmd="$cmd $*"
 
+  if [[ $verbose -eq 1 ]]; then
+    eval "echo $cmd"
+  fi
+  eval "$cmd"
+  RET=$( test $? -eq "$RET" -a $? -eq 0; echo $? ) # bash equivalent of RET |= $?
+fi
+
+if [[ $sysUpdate -eq 1 ]]; then
+  echo -e "\nDoing package update..."
+  #paru maintianer isn't confident in --needed with paru, let's see if any issues arise... https://github.com/Morganamilo/paru/pull/1100
+  cmd="paru -S --refresh --sysupgrade --devel --needed"
+  if [[ $noConfirm -eq 1 ]]; then
+    cmd="$cmd --noconfirm"
+  fi
+  if [[ $ignorePkgs -eq 1 ]]; then
+    read -ra ignore_pkgs_arr <<<"${IGNORE_PKGS}"
+    cmd="$cmd ${ignore_pkgs_arr[*]}"
+  fi
+  cmd="$cmd $*"
+
+  if [[ $verbose -eq 1 ]]; then
+    eval "echo $cmd"
+  fi
   eval "$cmd"
   RET=$( test $? -eq "$RET" -a $? -eq 0; echo $? ) # bash equivalent of RET |= $?
 fi
