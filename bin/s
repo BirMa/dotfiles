@@ -165,10 +165,10 @@ fi
 if [[ $cleanup -eq 1 ]]; then
   #paru -Sc # Debatable whether I ever want to use this. The keep-last-three-versions hook works nicely.
   echo -e "\nflatpak cleanup..."
-  cmd="flatpak uninstall --unused --delete-data"
-  if [[ $noConfirm -eq 1 ]]; then
-    cmd="$cmd --assumeyes"
-  fi
+  cmd="flatpak uninstall --unused --delete-data --assumeyes"
+  # if [[ $noConfirm -eq 1 ]]; then
+  #   cmd="$cmd --assumeyes"
+  # fi
   eval "$cmd"
 fi
 
