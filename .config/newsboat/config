@@ -1,0 +1,6 @@
+feed-sort-order title
+datetime-format %y-%m-%d
+confirm-mark-feed-read no
+browser "_vid --background a %u"
+
+bind o articlelist,searchresultslist,article,urlview open-in-browser-and-mark-read;up
