@@ -73,7 +73,9 @@ _xinitrc_print_post 'bash' 'devmon'
 
 
 session=${1:-awesome}
-#session=${1:-gnome}
+
+#export DESKTOP_SESSION=plasma
+#exec startplasma-x11
 
 _xinitrc_print_pre 'WM'
 case $session in
