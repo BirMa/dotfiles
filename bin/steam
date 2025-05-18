@@ -6,19 +6,48 @@ set -euo pipefail
 export STEAM_RUNTIME=1
 export GTK2_RC_FILES="/usr/share/themes/Breeze-Dark/gtk-2.0/gtkrc" # Systray rightclick menu uses gtk2 it appears
 
-START_WITH_CONSOLE=0
+START_WITH_CONSOLE=1
+START_OFFLINE=0
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    offline)
+      START_OFFLINE=1
+      shift
+      ;;
+    -|--)
+      # No more parameters, shift the - and stop processing them
+      shift
+      break
+      ;;
+    *)
+      echo "Ignoring option $1"
+      shift
+      ;;
+  esac
+done
+
+if [[ "$START_OFFLINE" = 1 ]]; then
+  echo "Enabling offline mode!"
+  # shellcheck disable=SC2016
+  sd '(\s*)("WantsOfflineMode")(\s*)"\d"(.*)' '$1$2$3"1"$4' "$HOME/.local/share/Steam/config/loginusers.vdf"
+else
+  echo "(No offline mode)"
+  # shellcheck disable=SC2016
+  sd '(\s*)("WantsOfflineMode")(\s*)"\d"(.*)' '$1$2$3"0"$4' "$HOME/.local/share/Steam/config/loginusers.vdf"
+fi
 
 # /home/md/.local/share/Steam/steamui/css/sp.css
 #libraryhome_UpdatesContainer_17uEB
 # This used to work: .libraryhome_UpdatesContainer_17uEB{display: none !important; ....
 # File size needs to be same, use okteta for editing and dhex for neat binary diffs
 #                               display:   none   !important;
-grep --extended-regexp --quiet '\{display:\s*none\s*!important;\}?\s{3,}' "$XDG_DATA_HOME"/Steam/steamui/css/*.css \
-  ||
-  {
-    notify-send --urgency=normal --expire-time=5000 '"What'\''new" is back!               ' 'FUUUUUU\nstarting with console'
-    START_WITH_CONSOLE=1
-  }
+#grep --extended-regexp --quiet '\{display:\s*none\s*!important;\}?\s{5,}' "$XDG_DATA_HOME"/Steam/steamui/css/*.css \
+#  ||
+#  {
+#    notify-send --urgency=normal --expire-time=5000 '"What'\''new" is back!               ' 'FUUUUUU\nstarting with console'
+#    START_WITH_CONSOLE=1
+#  }
 
 if [[ START_WITH_CONSOLE -eq 1 ]]; then
   # gamemoderun currently segfaults within lsof every 10 seconds because the injected code doesn't handle some dbus error correctly...
@@ -32,12 +61,14 @@ fi
 
 if false; then
   echo "update steam"
+  #cat ./chunk~2dcc5aaf7.css_orig | perl -pe 'if (s/(\._17uEBe5Ri8TMsnfELvs8-N)\{([^}]+)\}/"$1" . "{display:none !important; " . (" " x (length($2)-length("display:none !important;")-1)) . "}"/e) { print STDERR "Replaced at line $.\n" }' > ./chunk~2dcc5aaf7.css
+
   # sudo chattr -i ./chunk~2dcc5aaf7.css
-  cd /home/md/.local/share/Steam/steamui/css/
-  cp -v ./chunk~2dcc5aaf7.css{,_orig}
+  #cd /home/md/.local/share/Steam/steamui/css/
+  #cp -v ./chunk~2dcc5aaf7.css{,_orig}
   # body>div:nth-child(1)>div>div:nth-child(3)>div:nth-child(2)>div:nth-child(2)>div:nth-child(1)>div:nth-child(2)>div:nth-child(3)>div:nth-child(1)>div>div:nth-child(1)>div>div:nth-child(1){display:none!important;}
-  vi ./chunk~2dcc5aaf7.css # fix it: used to be libraryhome_UpdatesContainer_17uEB, now it's some Id. Grab it from the steam dev console.
-  okteta ./chunk~2dcc5aaf7.css # file needs to end with 0x2A 0x2F (pres INSERT to set okteta to non-overwrite-mode)
+  #vi ./chunk~2dcc5aaf7.css # fix it: used to be libraryhome_UpdatesContainer_17uEB, now it's some Id. Grab it from the steam dev console.
+  #okteta ./chunk~2dcc5aaf7.css # file needs to end with 0x2A 0x2F (pres INSERT to set okteta to non-overwrite-mode)
   # sudo chattr +i ./chunk~2dcc5aaf7.css
   steam
 fi

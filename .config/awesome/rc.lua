@@ -76,15 +76,15 @@ beautiful.init(Awful.util.getdir("config") .. "/themes/my_default_2.0/theme.lua"
 
 -- Application launches
 local editor_cmd1 = "nvim-qt"
-local editor_cmd2 = "kitty -e nvim"
-local editor_cmd2_root = "kitty -e 'bash -c \"sudo -i nvim\"'"
+local editor_cmd2 = "kitty -1 -e nvim"
+local editor_cmd2_root = "kitty -1 -e 'bash -c \"sudo -i nvim\"'"
 local filemanager_cmd1 = "thunar"
 local filemanager_cmd1_root = "gksudo thunar"
 local filemanager_cmd2 = "spacefm"
 local filemanager_cmd2_root = "spacefm"
-local terminal_cmd = "kitty"
-local terminal_cmd_root = "kitty -e bash -c 'su -l root'"
-local terminal_cmd_stanalone = "kitty"
+local terminal_cmd = "kitty -1"
+local terminal_cmd_root = "kitty -1 -e bash -c 'su -l root'"
+local terminal_cmd_stanalone = "kitty -1"
 local firefox_cmd_defaultProfile = "firefox -P entertainment --new-instance"
 local firefox_cmd_ProfileManager = "firefox --ProfileManager --new-instance"
 
@@ -120,11 +120,11 @@ local eject_cmd = "eject -T"
 local lock_screen_cmd = "slock"
 
 
-local bootNextWIN_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=auto-windows"
-local bootNextLINUX_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=arch.conf"
-local bootNextMENU_cmd = "systemctl reboot --boot-loader-menu=300s"
-local bootNextBIOS_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=auto-reboot-to-firmware-setup"
-local bootNextEFISHELL_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=auto-efi-shell"
+local bootToWIN_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=auto-windows"
+local bootToLINUX_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=arch.conf"
+local bootToMENU_cmd = "systemctl reboot --boot-loader-menu=300s"
+local bootToSETUP_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=auto-reboot-to-firmware-setup"
+local bootToEFISHELL_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=auto-efi-shell"
 
 
 local suspend_disk_cmd = "suspend_disk"
@@ -256,11 +256,11 @@ Mytoolsmenu = {
 }
 
 Myplusmenu = {
-  { "bootNext|WIN", bootNextWIN_cmd },
-  { "bootNext|LINUX", bootNextLINUX_cmd },
-  { "bootNext|MENU", bootNextMENU_cmd },
-  { "bootNext|BIOS", bootNextBIOS_cmd },
-  { "bootNext|EFI", bootNextEFISHELL_cmd },
+  { "boot Windows", bootToWIN_cmd },
+  { "boot Linux", bootToLINUX_cmd },
+  { "boot BootMenu", bootToMENU_cmd },
+  { "boot Setup", bootToSETUP_cmd },
+  { "boot EfiShell", bootToEFISHELL_cmd },
   { "etc,shutdown", etc_shutdown_cmd },
   { "lock,hibernate", lock_suspend_disk_cmd },
   { "lock,suspend", lock_suspend_ram_cmd },
@@ -589,8 +589,8 @@ Globalkeys = Awful.util.table.join(
   -- Sound control
   Awful.key({                            }, "XF86AudioRaiseVolume", function () Volume.up() end),
   Awful.key({                            }, "XF86AudioLowerVolume", function () Volume.down() end),
-  Awful.key({                            }, "XF86AudioMute", function () Volume.toggleMute() end),
-  Awful.key({ "Shift"                    }, "XF86AudioMute", function () MicrophoneToggleMute() end),
+  Awful.key({ "Shift"                    }, "XF86AudioMute", function () Volume.toggleMute() end),
+  Awful.key({                            }, "XF86AudioMute", function () MicrophoneToggleMute() end),
 
   -- Media player controls
   Awful.key({                            }, "XF86AudioPlay",  function () Awful.spawn(audio_play) end),
@@ -707,8 +707,8 @@ Globalkeys = Awful.util.table.join(
     --if more_tools == true then Awful.spawn("pavucontrol") end
   end),
 
-  -- launch pavucontrol
-  Awful.key({ modkey,                    }, "F"..tag_soundtools,    function () Awful.spawn("pavucontrol") end),
+  -- launch pwvucontrol
+  Awful.key({ modkey,                    }, "F"..tag_soundtools,    function () Awful.spawn("pwvucontrol") end),
 
   -- launch monitoring
   Awful.key({ modkey                     }, "F"..tag_monitoring,    function ()
@@ -965,6 +965,9 @@ Awful.rules.rules = {
     rule       = { class = "pavucontrol"},
     properties = { screen = screen_tools, tag = tag_soundtools },
   }, {
+    rule       = { class = "pwvucontrol"},
+    properties = { screen = screen_tools, tag = tag_soundtools },
+  }, {
     rule       = { class = "SonoBus"},
     properties = { screen = screen_tools, tag = tag_soundtools },
   }, {
@@ -1013,6 +1016,9 @@ Awful.rules.rules = {
   }, {
     rule       = { class = "kitty", name  = "monitoring_iotop" },
     properties = { screen = screen_monitoring, tag = tag_monitoring },
+  }, {
+    rule       = { class = "MonitorStuff" },
+    properties = { screen = 3, tag = "3" },
   }
   -- Preset rules TODO: maybe merge some of these
   -- { -- All clients will match this rule.
