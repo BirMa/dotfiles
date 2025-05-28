@@ -176,6 +176,9 @@ if [[ $cleanup -eq 1 ]]; then
   # if [[ $noConfirm -eq 1 ]]; then
   #   cmd="$cmd --assumeyes"
   # fi
+  if [[ $verbose -eq 1 ]]; then
+    eval "echo $cmd"
+  fi
   eval "$cmd"
 fi
 
@@ -207,7 +210,7 @@ if [[ $downloadPackagesOnly -eq 1 ]]; then
 fi
 
 if [[ $sysUpdate -eq 1 ]]; then
-  echo -e "\nDoing package update..."
+  echo -e "\nSystem package update..."
   #paru maintianer isn't confident in --needed with paru, let's see if any issues arise... https://github.com/Morganamilo/paru/pull/1100
   cmd="paru -S --refresh --sysupgrade --devel --needed"
   if [[ $noConfirm -eq 1 ]]; then
