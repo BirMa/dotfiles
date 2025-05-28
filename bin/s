@@ -11,7 +11,7 @@ IGNORE_PKGS="--ignore zfs-linux,zfs-linux-git,zfs-linux-headers,zfs-utils,zfs-ut
 
 Fy=0
 cleanup=0
-downloadPackages=0
+downloadPackagesOnly=0
 ignorePkgs=0
 firmwareUpdate=0
 noConfirm=0
@@ -20,18 +20,33 @@ poweroffOnSuccess=0
 rebootOnSuccess=0
 verbose=0
 
+# TODO - switch to =0
 mountNasCache=1
 
-flatUpdate=1
-reposUpdate=1
-sysUpdate=1
-tldrUpdate=1
+flatUpdate=0
+reposUpdate=0
+sysUpdate=0
+tldrUpdate=0
 
-unsetDefaultFlags=0 # whether cmd args are given, if not set default flags below
+set_default_flags() {
+  mountNasCache=1
+
+  flatUpdate=1
+  reposUpdate=1
+  sysUpdate=1
+  tldrUpdate=1
+}
+
+ORIG_ARGC=$#
+
+if [[ $# -eq 0 ]]; then
+  set_default_flags
+fi
+
 while [[ $# -gt 0 ]]; do
-  unsetDefaultFlags=1
   case $1 in
     c|clean|cleanup|clearPkgCaches)
+      mountNasCache=1
       Fy=1 # not cleanup, but useful to do every now and then
       cleanup=1
       shift
@@ -46,36 +61,31 @@ while [[ $# -gt 0 ]]; do
       ;;
     i|ignorePkgs)
       # Ignore some packages that e..g depend on zfs/linux/etc.
+      set_default_flags
       ignorePkgs=1
-      unsetDefaultFlags=0
       shift
       ;;
     m|noMount)
       # Don't mount external package cache.
+      set_default_flags
       mountNasCache=0
-      unsetDefaultFlags=0
       shift
       ;;
     n|noUpdate)
-      flatUpdate=0
-      reposUpdate=0
-      sysUpdate=0
-      tldrUpdate=0
-      unsetDefaultFlags=0
       shift
       ;;
     p|poweroff|shutdown)
       # Poweroff after successfully updating.
+      set_default_flags
       poweroffOnSuccess=1
       noConfirm=1
-      unsetDefaultFlags=0
       shift
       ;;
     r|reboot)
       # Reboot after successfully updating.
+      set_default_flags
       rebootOnSuccess=1
       noConfirm=1
-      unsetDefaultFlags=0
       shift
       ;;
     u|updatePkgDb)
@@ -85,28 +95,26 @@ while [[ $# -gt 0 ]]; do
       ;;
     v|verbose)
       verbose=1
-      unsetDefaultFlags=0
+      # Special case: When only verbose is specified run with default flags
+      if [[ $ORIG_ARGC -eq 1 ]]; then
+        set_default_flags
+      fi
       shift
       ;;
     w|downloadOnly)
       # Don't install anything; just download packages into cache; only applies to pacman
-      downloadPackages=1
-      flatUpdate=0
-      reposUpdate=0
-      sysUpdate=0
-      tldrUpdate=0
-      unsetDefaultFlags=0
+      downloadPackagesOnly=1
       shift
       ;;
     y|noconfirm|yes)
       # Suppress interactivity and assume yes for update processes
+      set_default_flags
       noConfirm=1
-      unsetDefaultFlags=0
       shift
       ;;
     -|--)
       # No more parameters, shift the - and stop processing them
-      unsetDefaultFlags=0
+      set_default_flags
       shift
       break
       ;;
@@ -117,18 +125,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ $unsetDefaultFlags -eq 1 ]]; then
-  flatUpdate=0
-  mountNasCache=0
-  reposUpdate=0
-  sysUpdate=0
-  tldrUpdate=0
-fi
-
 if [[ $verbose -eq 1 ]]; then
   echo "Fy: $Fy"
   echo "cleanup: $cleanup"
-  echo "downloadPackages: $downloadPackages"
+  echo "downloadPackagesOnly: $downloadPackagesOnly"
   echo "ignorePkgs: $ignorePkgs"
   echo "firmwareUpdate: $firmwareUpdate"
   echo "noConfirm: $noConfirm"
@@ -144,7 +144,7 @@ if [[ $verbose -eq 1 ]]; then
   echo "tldrUpdate: $tldrUpdate"
 fi
 
-# caching sudo
+# cache sudo
 sudo echo || exit 202
 
 RET=0
@@ -183,7 +183,7 @@ if [[ $firmwareUpdate -eq 1 ]]; then
   sudo fwupdmgr update
 fi
 
-if [[ $downloadPackages -eq 1 ]]; then
+if [[ $downloadPackagesOnly -eq 1 ]]; then
   echo -e "\nDownloading paru update packages..."
   cmd="paru --needed -S --refresh --downloadonly --noconfirm --mode=repo"
   if [[ $ignorePkgs -eq 1 ]]; then
@@ -258,10 +258,12 @@ if [[ "$RET" -eq 0 ]]; then
   if [[ $rebootOnSuccess -eq 1 ]]; then
     echo -e "\nrebooting..."
     systemctl reboot
+    exit 0
   fi
   if [[ $poweroffOnSuccess -eq 1 ]]; then
     echo -e "\nshutting down..."
     systemctl poweroff
+    exit 0
   fi
 fi
 
