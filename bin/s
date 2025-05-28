@@ -20,9 +20,7 @@ poweroffOnSuccess=0
 rebootOnSuccess=0
 verbose=0
 
-# TODO - switch to =0
-mountNasCache=1
-
+mountNasCache=0
 flatUpdate=0
 reposUpdate=0
 sysUpdate=0
@@ -52,6 +50,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     check)
+      mountNasCache=1
       paccheck=1
       shift
       ;;
@@ -72,6 +71,12 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     n|noUpdate)
+      mountNasCache=1
+      shift
+      ;;
+    yu|update)
+      # Same as just calling without any parameters, but explicit so it can be used with other flags.
+      set_default_flags
       shift
       ;;
     p|poweroff|shutdown)
@@ -91,6 +96,7 @@ while [[ $# -gt 0 ]]; do
     u|updatePkgDb)
       # Update pkgfile database.
       Fy=1
+      mountNasCache=1
       shift
       ;;
     v|verbose)
@@ -104,6 +110,7 @@ while [[ $# -gt 0 ]]; do
     w|downloadOnly)
       # Don't install anything; just download packages into cache; only applies to pacman
       downloadPackagesOnly=1
+      mountNasCache=1
       shift
       ;;
     y|noconfirm|yes)
