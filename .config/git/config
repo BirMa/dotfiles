@@ -1,6 +1,8 @@
 [include]
   path = "./github.ini"
   path = "./github_private.ini"
+[inclueIf "gitdir:~/sonstige/projects/aur/"]
+  path = "./aur.ini"
 [push]
   default = simple
 [core]
