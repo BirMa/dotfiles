@@ -7,6 +7,10 @@ declare -a repos_to_update=(
 "$HOME/repos/yt-dlp_git"
 )
 
+declare -a aur_pkgs_i_maintain=(
+"$HOME/sonstige/projects/aur/ztop/"
+)
+
 IGNORE_PKGS="--ignore zfs-linux,zfs-linux-git,zfs-linux-headers,zfs-utils,zfs-utils-debug,zfs-utils-git,linux,linux-docs,linux-headers,linux-api-headers,nvidia,nvidia-utils,lib32-nvidia-utils,nvidia-settings,opencl-nvidia,nvidia-open"
 
 Fy=0
@@ -16,6 +20,7 @@ ignorePkgs=0
 firmwareUpdate=0
 noConfirm=0
 paccheck=0
+nvcheck=0
 poweroffOnSuccess=0
 rebootOnSuccess=0
 verbose=0
@@ -33,6 +38,7 @@ set_default_flags() {
   reposUpdate=1
   sysUpdate=1
   tldrUpdate=1
+  nvcheck=1
 }
 
 ORIG_ARGC=$#
@@ -77,6 +83,10 @@ while [[ $# -gt 0 ]]; do
     yu|update)
       # Same as just calling without any parameters, but explicit so it can be used with other flags.
       set_default_flags
+      shift
+      ;;
+    nvcheck)
+      nvcheck=1
       shift
       ;;
     p|poweroff|shutdown)
@@ -254,12 +264,29 @@ if [[ $reposUpdate -eq 1 ]]; then
   do
     if [[ -d "$i" ]]; then
       (
-      echo "updating $i"
-      cd "$i"
-      git pull --verbose || echo "WARNING: git pull '$i' failed"
+        echo "updating $i"
+        cd "$i"
+        git pull --verbose || echo "WARNING: git pull '$i' failed"
       )
-  else
-    echo "WARNING: '$i' is specified to be updated but doesn't exist"
+    else
+      echo "WARNING: '$i' is specified to be updated but doesn't exist"
+    fi
+  done
+fi
+
+if [[ $nvcheck -eq 1 ]]; then
+  echo -e "\nchecking if aur packages need updating"
+
+  for repo in "${aur_pkgs_i_maintain[@]}"
+  do
+    if [[ -d "$repo" ]]; then
+      (
+        echo "checking $repo"
+        cd "$repo" || echo "WARNING: $repo doesn't exist"
+        pkgctl version check
+      )
+    else
+      echo "WARNING: '$repo' is specified to be updated but doesn't exist"
     fi
   done
 fi
