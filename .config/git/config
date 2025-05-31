@@ -1,8 +1,10 @@
-[include]
-  path = "./github.ini"
-  path = "./github_private.ini"
 [inclueIf "gitdir:~/sonstige/projects/aur/"]
   path = "./aur.ini"
+[include]
+  path = "./github.ini"
+[user]
+  name = Birnthaler Martin
+  email = birnthalermartin@gmail.com
 [push]
   default = simple
 [core]
