@@ -730,7 +730,7 @@ Globalkeys = Awful.util.table.join(
   -- launch communication tools
   Awful.key({ modkey,                    }, "F"..tag_communication, function ()
     -- if more_tools == true then Awful.spawn("vencord") end
-    Awful.spawn("telegram-desktop");
+    Awful.spawn("Telegram");
   end),
 
   -- launch firefox
