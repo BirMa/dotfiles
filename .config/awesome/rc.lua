@@ -1014,6 +1014,10 @@ Awful.rules.rules = {
     rule       = { class = "kitty", name  = "monitoring_btop" },
     properties = { screen = screen_monitoring, tag = tag_monitoring },
   }, {
+    rule       = { class = "kitty", name  = "monitor_nonsense" },
+    properties = { screen = 2, tag = "1" },
+  }, {
+  }, {
     rule       = { class = "kitty", name  = "monitoring_iotop" },
     properties = { screen = screen_monitoring, tag = tag_monitoring },
   }, {
