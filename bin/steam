@@ -60,10 +60,9 @@ fi
 #/usr/bin/steam -console "$@" # just the console
 
 if false; then
-  echo "update steam"
-  #cat ./chunk~2dcc5aaf7.css_orig | perl -pe 'if (s/(\._17uEBe5Ri8TMsnfELvs8-N)\{([^}]+)\}/"$1" . "{display:none !important; " . (" " x (length($2)-length("display:none !important;")-1)) . "}"/e) { print STDERR "Replaced at line $.\n" }' > ./chunk~2dcc5aaf7.css
+  #cd ~/.local/share/Steam/steamui/css && perl -i -pe 'if (s/(\._17uEBe5Ri8TMsnfELvs8-N)\{([^}]+)\}/"$1" . "{display:none !important; " . (" " x (length($2)-length("display:none !important;")-1)) . "}"/e) { print STDERR "Replaced at line $.\n" }' ./chunk~2dcc5aaf7.css
 
-  # sudo chattr -i ./chunk~2dcc5aaf7.css
+  # old stuff:
   #cd /home/md/.local/share/Steam/steamui/css/
   #cp -v ./chunk~2dcc5aaf7.css{,_orig}
   # body>div:nth-child(1)>div>div:nth-child(3)>div:nth-child(2)>div:nth-child(2)>div:nth-child(1)>div:nth-child(2)>div:nth-child(3)>div:nth-child(1)>div>div:nth-child(1)>div>div:nth-child(1){display:none!important;}
