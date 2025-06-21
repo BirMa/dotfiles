@@ -1,7 +1,5 @@
 #! /usr/bin/env sh
 
-if [ -f ./code.workspace ]; then
-  code ./code.workspace
-else
-  code .
-fi
+F=$(find . -maxdepth 2 -iname '*.code-workspace' | head -n1)
+echo "workspace: '$F'"
+code "./$F"
