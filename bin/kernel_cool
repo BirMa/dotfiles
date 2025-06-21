@@ -10,7 +10,7 @@ RESET=$(tput sgr0)
 INSTALLED_ZFS=$( ( pacman --color never -Q zfs-linux zfs-linux-git 2>/dev/null || true ) | cut -d\  -f 2)
 INSTALLED_KERNEL=$(pacman -Q linux | cut  -d\  -f 2)
 RUNNING_KERNEL=$(uname -r)
-RUNNING_ZFS=$(zfs version | perl -n -e 'print if s/^zfs-([0-9].*)/\1/')
+RUNNING_ZFS=$(zfs version | perl -n -e 'print if s/^zfs-kmod-([0-9].*)/\1/')
 # does installed kernel version match running kernel version?
 if [[ "$( uname -r | tr "." "-" )" = "$( pacman -Q linux | cut  -d\  -f2 | tr "." "-")" ]]; then
     echo -e "${GREEN}yes${RESET}:     $RUNNING_KERNEL (zfs $RUNNING_ZFS) == $INSTALLED_KERNEL (zfs $INSTALLED_ZFS)"
@@ -39,6 +39,7 @@ function reload {
     rm "$1"
   fi
   if [[ ! -f "$1" ]]; then
+    echo "reloading..."
     curl --silent "$2" >"$1"
   fi
 }
@@ -61,5 +62,6 @@ hq a attr href <"$TMP_Z" \
 echo -n "kernel:  "
 hq a attr href <"$TMP_M" \
   | perl -n -e \
-  'print if s/^linux-([0-9]+\.[0-9]+\.[0-9]+\.arch.*)-x86_64\.pkg\.tar\.zst$/\1/'
+  'print if s/^linux-([0-9]+\.[0-9]+\.[0-9]+\.arch.*)-x86_64\.pkg\.tar\.zst$/\1/' \
+  | paste --serial --delimiter=','
 
