@@ -4,11 +4,13 @@ set -o nounset
 set -o errexit
 
 declare -a repos_to_update=(
-"$HOME/repos/yt-dlp_git"
+  "$HOME/repos/yt-dlp_git"
+  "$HOME/repos/mpv-selectformat_git"
+  "$HOME/repos/mpv-image-viewer_git"
 )
 
 declare -a aur_pkgs_i_maintain=(
-"$HOME/sonstige/projects/aur/ztop/"
+  "$HOME/sonstige/projects/aur/ztop/"
 )
 
 IGNORE_PKGS="--ignore zfs-linux,zfs-linux-git,zfs-linux-headers,zfs-utils,zfs-utils-debug,zfs-utils-git,linux,linux-docs,linux-headers,linux-api-headers,nvidia,nvidia-utils,lib32-nvidia-utils,nvidia-settings,opencl-nvidia,nvidia-open"
@@ -190,6 +192,24 @@ if [[ $cleanup -eq 1 ]]; then
     eval "echo $cmd"
   fi
   eval "$cmd"
+
+  echo -e "\nparu build cache cleanup..."
+  if [[ $verbose -eq 1 ]]; then
+    v_flag=" -v "
+  fi
+  cmd="find '$XDG_CACHE_HOME/paru/clone/' \
+  -maxdepth 2 -and \( \
+    -iname '*.pkg.tar' \
+    -or -iname '*.rpm' \
+    -or -iname '*.deb' \
+    -or -iname '*.zip' \
+    -or -iname '*.tar.gz' \
+    -or -iname '*.AppImage' \
+    \) -execdir rm ${v_flag:-} '{}' \;"
+  if [[ $verbose -eq 1 ]]; then
+    eval "echo $cmd"
+  fi
+  eval "$cmd"
 fi
 
 if [[ $paccheck -eq 1 ]]; then
@@ -279,14 +299,14 @@ if [[ $nvcheck -eq 1 ]]; then
 
   for repo in "${aur_pkgs_i_maintain[@]}"
   do
-    if [[ -d "$repo" ]]; then
+    if [[ -f "$repo/.nvchecker.toml" ]]; then
       (
         echo "checking $repo"
         cd "$repo" || echo "WARNING: $repo doesn't exist"
         pkgctl version check
       )
     else
-      echo "WARNING: '$repo' is specified to be updated but doesn't exist"
+      echo "WARNING: '$repo' is specified to be updated but dir or containing .nvchecker.toml doesn't exist"
     fi
   done
 fi
