@@ -59,9 +59,9 @@ done
 
 ####### start some useful things before the WM ##############################
 
-_xinitrc_print_pre 'bash' 'devmon'
-devmon --sync --exec-on-drive 'notify-send "mount %l" "<b>%f</b> => <b>%d</b>"' --exec-on-unmount 'notify-send "unmount %l" "<b>%f</b> => <b>%d</b>"' --exec-on-remove 'notify-send "remove <b>%f</b>"' &
-_xinitrc_print_post 'bash' 'devmon'
+#_xinitrc_print_pre 'bash' 'devmon'
+#devmon --sync --exec-on-drive 'notify-send "mount %l" "<b>%f</b> => <b>%d</b>"' --exec-on-unmount 'notify-send "unmount %l" "<b>%f</b> => <b>%d</b>"' --exec-on-remove 'notify-send "remove <b>%f</b>"' &
+#_xinitrc_print_post 'bash' 'devmon'
 
 
 #_xinitrc_print_pre 'nvidia modprobe'
