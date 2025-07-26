@@ -10,6 +10,8 @@ mp.add_key_binding(
       '-c',
       string.format("echo -n '%s' | xclip -selection clipboard", result:gsub("'", "'\\''"))
     );
-    print(string.format('Copied to clipboard: %s', result))
+    msg = string.format('Copied to clipboard: %s', result);
+    mp.msg.info(msg);
+    mp.osd_message(msg , 1);
   end
 )
