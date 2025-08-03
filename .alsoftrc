@@ -1,0 +1,3 @@
+[general]
+# openal seems to prefer jack over pipewire/pulse, which sucks because jack sources don't show up in pipewire/pulse soundmixers
+drivers = pipewire, pipe, pulse,
