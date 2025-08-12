@@ -1,0 +1,31 @@
+set database sqlite
+set advance-pages-per-row false
+set first-page-column 1
+set selection-clipboard clipboard
+set statusbar-home-tilde true
+set window-title-basename true
+set window-title-page true
+
+map e adjust_window best-fit
+map <S-e> adjust_window width
+
+map <Space> navigate next
+map <S-Space> navigate previous
+
+map - zoom out
+map = zoom in
+map + zoom reset
+
+#map <A-1> set 'recolor-darkcolor #f0f0f0'
+#map <A-2> set 'recolor-lightcolor #101010'
+
+#map <A-3> set 'recolor-darkcolor #0a3144'
+#map <A-4> set 'recolor-lightcolor #f7f0c2'
+
+set recolor-darkcolor #fafffc
+set recolor-lightcolor #1c1f1e
+
+map <A-0> set recolor true
+#set recolor true
+#map <A-0> set recolor false
+
