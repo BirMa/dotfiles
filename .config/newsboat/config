@@ -1,3 +1,4 @@
+cleanup-on-quit yes
 feed-sort-order title
 datetime-format %y-%m-%d
 confirm-mark-feed-read no
