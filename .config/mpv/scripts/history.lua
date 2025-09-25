@@ -10,8 +10,8 @@ mp.register_event('file-loaded', function()
   logfile:write(
     ('[%s]\0%s\0%s\n'):format(
       os.date('%Y-%m-%d %X'),
-      mp.get_property('path'):gsub("\n", ""),
-      mp.get_property('media-title')
+      mp.get_property('media-title'),
+      mp.get_property('path'):gsub("\n", "")
     )
   );
   logfile:close();
