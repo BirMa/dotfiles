@@ -700,7 +700,8 @@ Globalkeys = Awful.util.table.join(
 
   -- launch sound related tools
   Awful.key({ modkey, "Shift"            }, "F"..tag_soundtools,    function ()
-    Awful.spawn("sonobus")
+    Awful.spawn("easyeffects")
+    -- Awful.spawn("sonobus")
     --os.execute("sleep .2") -- sleep to make window positions deterministic
     --if more_tools == true then Awful.spawn("easyeffects") end
     --os.execute("sleep .2")
