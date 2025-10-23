@@ -27,5 +27,19 @@ alias v='$HOME/bin/_vid'
 alias heroes_3_shell_with_prefix='export WINEPREFIX="$HOME/.local/share/Lutris_Games/gog/heroes-of-might-and-magic-iii" && cd "$WINEPREFIX/drive_c/GOG Games/HoMM 3 Complete"'
 
 function walk {
-  cd "$(/usr/bin/walk "$@")"
+  cd "$(/usr/bin/walk "$@")" || echo "cd failed"
 }
+
+echo -e "\e[7m░░░░░░░░░░░░░░░░░░░░░░░\e[0m"
+echo -e "\e[7m░░▄▀▄▀▀▀▀▄▀▄░░░░░░░░░░░\e[0m"
+echo -e "\e[7m░░█░░░░░░░░▀▄░░░░░░▄░░░\e[0m"
+echo -e "\e[7m░█░░▀░░▀░░░░░▀▄▄░░█░█░░\e[0m"
+echo -e "\e[7m░█░▄░█▀░▄░░░░░░░▀▀░░█░░\e[0m"
+echo -e "\e[7m░█░░▀▀▀▀░░░░░░░░░░░░█░░\e[0m"
+echo -e "\e[7m░█░░░░░░░░░░░░░░░░░░█░░\e[0m"
+echo -e "\e[7m░█░░░░░░░░░░░░░░░░░░█░░\e[0m"
+echo -e "\e[7m░░█░░▄▄░░▄▄▄▄░░▄▄░░█░░░\e[0m"
+echo -e "\e[7m░░█░▄▀█░▄▀░░█░▄▀█░▄▀░░░\e[0m"
+echo -e "\e[7m░░░▀░░░▀░░░░░▀░░░▀░░░░░\e[0m"
+echo -e "\e[7m░░░░░░░░░░░░░░░░░░░░░░░\e[0m"
+echo "The dog has infected your terminal."
