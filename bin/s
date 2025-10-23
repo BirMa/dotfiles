@@ -225,7 +225,7 @@ fi
 
 if [[ $downloadPackagesOnly -eq 1 ]]; then
   echo -e "\nDownloading paru update packages..."
-  cmd="paru --needed -S --refresh --downloadonly --noconfirm --mode=repo"
+  cmd="paru --needed -S --sysupgrade --refresh --downloadonly --noconfirm --mode=repo"
   if [[ $ignorePkgs -eq 1 ]]; then
     read -ra ignore_pkgs_arr <<<"${IGNORE_PKGS}"
     cmd="$cmd ${ignore_pkgs_arr[*]}"
