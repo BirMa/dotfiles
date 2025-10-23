@@ -6,7 +6,7 @@ set -euo pipefail
 export STEAM_RUNTIME=1
 export GTK2_RC_FILES="/usr/share/themes/Breeze-Dark/gtk-2.0/gtkrc" # Systray rightclick menu uses gtk2 it appears
 
-START_WITH_CONSOLE=1
+START_WITH_CONSOLE=0
 START_OFFLINE=0
 
 while [[ $# -gt 0 ]]; do
@@ -53,6 +53,9 @@ if [[ START_WITH_CONSOLE -eq 1 ]]; then
   # gamemoderun currently segfaults within lsof every 10 seconds because the injected code doesn't handle some dbus error correctly...
   /usr/bin/steam -console -dev -tcp "$@" # -dev -tcp allows opening dev tools with F12
 else
+
+  # Steam hasn't changed the id of that thing in a long time
+  cd ~/.local/share/Steam/steamui/css && perl -i -pe 'if (s/(\._17uEBe5Ri8TMsnfELvs8-N)\{([^}]+)\}/"$1" . "{display:none !important; " . (" " x (length($2)-length("display:none !important;")-1)) . "}"/e) { print STDERR "Replaced at line $.\n" }' ./chunk~2dcc5aaf7.css
   /usr/bin/steam "$@"
 fi
 
