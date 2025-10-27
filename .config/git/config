@@ -130,3 +130,5 @@
 [gui]
 	diffcontext = 7
 	historybrowser = gitg
+[log]
+	date = iso
