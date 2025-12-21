@@ -5,7 +5,6 @@ set -euo pipefail
 n
 paru -Sy
 
-cd ~/sonstige/tmp/artifacts/
 ls -la
 
 GIT=${1:-"no"}
