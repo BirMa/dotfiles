@@ -284,7 +284,7 @@ if [[ $reposUpdate -eq 1 ]]; then
   do
     if [[ -d "$i" ]]; then
       (
-        echo "updating $i"
+        echo -e "\nupdating $i"
         cd "$i"
         git pull --verbose || echo "WARNING: git pull '$i' failed"
       )
