@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+# TODO: merge all this into backup script
+
 set -o nounset
 set -o errexit
 
