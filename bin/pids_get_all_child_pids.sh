@@ -1,6 +1,11 @@
 #! /usr/bin/env bash
+# Gets all child PIDs (recursively) of the specified PIDs.
+#
+# Example usage:
+# ❯ $0 <pid1> <pid2> ... (don't quote the PID arryay)
 
-PIDS=("$@")
+PIDS=( "$@" )
+
 for pid in "${PIDS[@]}" ; do
   if ! [[ "$pid" =~ ^[0-9]+$ ]] ; then
     echo "Invalid PID: $pid. PIDs must be numeric." >&2
