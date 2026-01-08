@@ -9,8 +9,6 @@ SUFFIX="${1:-""}"
 
 POOL="$(zfs-poolname)"
 
-backup || true
-
 declare -a DATASETS=(
   "$POOL/data/home"
   "$POOL/root/default"
