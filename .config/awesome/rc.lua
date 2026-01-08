@@ -85,8 +85,8 @@ local filemanager_cmd2_root = "spacefm"
 local terminal_cmd = "kitty -1"
 local terminal_cmd_root = "kitty -1 -e bash -c 'su -l root'"
 local terminal_cmd_stanalone = "kitty -1"
-local firefox_cmd_defaultProfile = "firefox -P entertainment --new-instance"
-local firefox_cmd_ProfileManager = "firefox --ProfileManager --new-instance"
+local firefox_cmd_defaultProfile = "firefox-developer-edition -P entertainment --new-instance"
+local firefox_cmd_ProfileManager = "firefox-developer-edition --ProfileManager --new-instance"
 
 -- Tool launches
 local inc_display_brightness = "light -A 4"
@@ -123,7 +123,8 @@ local lock_screen_cmd = "slock"
 local bootToWIN_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=auto-windows"
 local bootToLINUX_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=arch.conf"
 local bootToMENU_cmd = "systemctl reboot --boot-loader-menu=300s"
-local bootToSETUP_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=auto-reboot-to-firmware-setup"
+-- local bootToSETUP_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=auto-reboot-to-firmware-setup"
+local bootToSETUP_cmd = "systemctl reboot --boot-loader-menu=1s --firmware-setup"
 local bootToEFISHELL_cmd = "systemctl reboot --boot-loader-menu=1s --boot-loader-entry=auto-efi-shell"
 
 
@@ -669,7 +670,7 @@ Globalkeys = Awful.util.table.join(
   -- Awful.key({ modkey,                    }, "F11",      function () Awful.spawn(kbd_switch2_de_cmd) end),
 
   -- switch to russian keyboard layout
-  -- Awful.key({ modkey, "Shift"            }, "F12",      function () Awful.spawn(kbd_switch2_ru_cmd) end),
+  Awful.key({ modkey, "Shift"            }, "F12",      function () Awful.spawn(kbd_switch2_ru_cmd) end),
 
   -- switch to us international keyboard layout
   Awful.key({ modkey,                    }, "F12",      function () Awful.spawn(kbd_switch2_us_cmd) end),
