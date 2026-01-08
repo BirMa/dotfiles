@@ -1,3 +1,11 @@
 #!/usr/bin/env sh
 
-zpool get -H bootfs | grep -v backup | cut -f1
+set -eu
+
+zfs list --json -o mountpoint,mounted |
+  jq --raw-output '
+  .datasets[]
+  | select(.properties.mountpoint.value == "/")
+  | select(.properties.mounted.value == "yes") # make sure no inherited nonsense is included
+  | .pool
+  '
