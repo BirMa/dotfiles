@@ -4,8 +4,8 @@
 #
 # Example usage:
 # ❯ $0 '0,1,2-7' steam firefox 54321
-# > $0 ALL steam firefox 54321
-# > $0 ALL ALL
+# ❯ $0 ALL steam firefox 54321
+# ❯ $0 ALL ALL
 
 set -euo pipefail
 unalias -a
@@ -37,37 +37,9 @@ else
   done
 fi
 
-ITER_LIMIT=100000
-procs_count=0
-go_through_all_children() {
-  local pid="$1"
-
-  ITER_LIMIT=$((ITER_LIMIT - 1))
-  if [[ "$ITER_LIMIT" -lt 0 ]]; then
-    echo -e "Limit reached, giving up after setting $procs_count affinities at pid=$pid, for\n${PIDS[*]}"
-    exit 1
-  fi
-
-  echo -e "\n  calling >>> taskset --all-tasks --pid --cpu-list $CPU_LIST $pid <<<"
-  taskset --all-tasks --pid --cpu-list "$CPU_LIST" "$pid" || echo "(that one failed)"
-
-  procs_count=$((procs_count + 1))
-  if [[ -r "/proc/$pid/task/$pid/children" ]]; then
-    # shellcheck disable=SC2013 # Actually want to read words here
-    for child in $(cat "/proc/$pid/task/$pid/children"); do
-      go_through_all_children "$child"
-    done
-  else
-    :
-    # echo "No children or no perms for /proc/$pid/task/$pid/children"
-  fi
-}
-
-if [[ ${#PIDS[@]} -eq 0 ]]; then
-  echo "No processes found matching: ${PROCNAMES[*]}"
-  exit 1
-fi
+mapfile -d\  -t PIDS < <( pids_get_all_child_pids.sh "${PIDS[@]}" )
 
 for pid in "${PIDS[@]}"; do
-  go_through_all_children "$pid"
+  echo -e "\n  calling >>> taskset --all-tasks --pid --cpu-list $CPU_LIST $pid <<<"
+  taskset --all-tasks --pid --cpu-list "$CPU_LIST" "$pid" || echo "taskset failed for pid $pid"
 done
