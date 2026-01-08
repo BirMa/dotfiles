@@ -21,7 +21,9 @@ do
     echo "found selected sink: $sink"
     new_sink=${SINKS[$(( idx + 1))]}
     echo "setting new default sink: $new_sink"
-    pactl set-default-sink "$new_sink" # TODO Why doesn't this work on md? Not that I need it there, but still
+    # TODO Why doesn't this work on md? Not that I need it there, but still.
+    # Maybe look at the comments here, unsure if related at all: https://www.reddit.com/r/linux/comments/1oerjbl/when_pipewire_just_wont_work_usa_alsa/
+    pactl set-default-sink "$new_sink"
     notify-send \
       --print-id \
       --replace-id="$notif_id" \
