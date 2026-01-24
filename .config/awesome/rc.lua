@@ -115,6 +115,8 @@ local kbd_switch2_apl_cmd = "setxkbmap -model pc104 -layout us,apl -variant altg
 -- kbd_switch2_ru_cmd = "localectl set-x11-keymap ru pc104"
 -- kbd_switch2_us_cmd = "localectl set-x11-keymap us pc104 altgr-intl"
 
+local pa_rotate_default_sinks_cmd = "pa_rotate_default_sinks.sh"
+
 local eject_cmd = "eject -T"
 
 local lock_screen_cmd = "slock"
@@ -677,6 +679,9 @@ Globalkeys = Awful.util.table.join(
 
   -- switch to us,apl keyboard layout
   Awful.key({ modkey, "Shift"            }, "F11",      function () Awful.spawn(kbd_switch2_apl_cmd) end),
+
+  -- rotate audio output defaults
+  Awful.key({ modkey,                    }, "F10",      function () Awful.spawn(pa_rotate_default_sinks_cmd) end),
 
   -- launch eject
   Awful.key({ modkey,                    }, "y",        function () Awful.spawn(eject_cmd) end),
