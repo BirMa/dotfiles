@@ -7,9 +7,10 @@ SUFFIX="${1:-""}"
 
 POOL="$(zfs-poolname)"
 
+# TODO probably better to just snapshot all that have a mountoint or something
 declare -a DATASETS=(
-  "$POOL/data/home"
-  "$POOL/root/default"
+  "$POOL/arch/home"
+  "$POOL/arch/root"
 )
 
 for i in "${DATASETS[@]}"
