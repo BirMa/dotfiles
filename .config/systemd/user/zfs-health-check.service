@@ -1,0 +1,11 @@
+[Unit]
+Description=ZFS Pool Health Check
+# Needs notify-send, i.e. a graphical session
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/bin/zfs-health-check
+
+[Install]
+WantedBy=default.target

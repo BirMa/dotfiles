@@ -1,0 +1,12 @@
+[Unit]
+Description=ZFS Pool Health Check Timer
+
+[Timer]
+# Run X minutes after login
+OnStartupSec=1min
+# Then run every Y minutes
+OnUnitActiveSec=5min
+RandomizedDelaySec=1min
+
+[Install]
+WantedBy=timers.target
