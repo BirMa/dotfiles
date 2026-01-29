@@ -163,6 +163,8 @@ if [[ $verbose -eq 1 ]]; then
   echo "tldrUpdate: $tldrUpdate"
 fi
 
+gopass sync || echo "(gopass sync failed)"
+
 # cache sudo
 sudo echo || exit 202
 
