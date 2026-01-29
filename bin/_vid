@@ -1,0 +1,183 @@
+#!/usr/bin/env python3
+
+import argparse
+import subprocess
+import sys
+import re
+import tomllib
+from pathlib import Path
+from typing import NamedTuple, TypedDict
+
+
+class ToolConfig(TypedDict, total=False):
+    binary: str
+    args: list[str]
+
+
+class CommandConfig(TypedDict, total=False):
+    tool: str
+    args: list[str]
+
+
+class SiteConfig(TypedDict, total=False):
+    regex: str
+    play: CommandConfig
+    gf: CommandConfig
+    gfa: CommandConfig
+    lf: CommandConfig
+
+
+class Config(TypedDict, total=False):
+    tools: dict[str, ToolConfig]
+    commands: dict[str, CommandConfig]
+    sites: dict[str, SiteConfig]
+
+
+class ParseResult(NamedTuple):
+    command: str
+    urls: list[str]
+    format_override: str | None
+    extra_args: list[str] | None
+
+
+CONFIG_PATH = Path.home() / ".config" / "vid" / "config.toml"
+
+DEFAULT_COMMAND = "play"
+
+
+def load_config() -> Config:
+    if not CONFIG_PATH.exists():
+        return {"tools": {}, "commands": {}, "sites": {}}
+    with open(CONFIG_PATH, "rb") as f:
+        return tomllib.load(f)
+
+
+def get_clipboard_urls() -> list[str]:
+    selections = ["primary", "secondary", "clipboard"]
+    for sel in selections:
+        try:
+            result = subprocess.run(
+                ["xclip", "-o", "-selection", sel],
+                capture_output=True,
+                text=True,
+                timeout=2,
+            )
+            if result.returncode == 0:
+                content = result.stdout.strip()
+                if is_playable(content):
+                    return content.split()
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            continue
+    return []
+
+
+def is_playable(s: str) -> bool:
+    return s.startswith(("http://", "https://")) or Path(s).exists()
+
+
+def parse_args() -> ParseResult:
+    parser = argparse.ArgumentParser(description="mpv/yt-dlp wrapper")
+
+    cmd_group = parser.add_mutually_exclusive_group()
+    cmd_group.add_argument("-p", "--play", action="store_const", const="play", dest="command", help="Play video (default)")
+    cmd_group.add_argument("-g", "--get-file", action="store_const", const="gf", dest="command", help="Download video file")
+    cmd_group.add_argument("-a", "--get-file-audio", action="store_const", const="gfa", dest="command", help="Download audio file (in high quality)")
+    cmd_group.add_argument("-l", "--list-formats", action="store_const", const="lf", dest="command", help="List available formats")
+
+    parser.add_argument("-f", "--format", dest="format_override", default=None, help="Format override")
+    parser.add_argument("--args", dest="extra_args", action="append", help="Raw args to pass to tool (can be specified multiple times)")
+
+    parser.add_argument("urls", nargs="*", help="URLs or file paths to play/download")
+
+    parser.set_defaults(command=DEFAULT_COMMAND)
+    args = parser.parse_args()
+
+    return ParseResult(args.command, args.urls, args.format_override, args.extra_args)
+
+
+def find_site_config(url: str, config: Config) -> dict:
+    for site_name, site_conf in config.get("sites", {}).items():
+        regex = site_conf.get("regex")
+        if regex and re.match(regex, url):
+            print(f"Detected site: {site_name}")
+            return site_conf
+    print("No site-settings found.")
+    return {}
+
+
+def merge_args(*arg_lists: list[str] | None) -> list[str]:
+    result = []
+    for args in arg_lists:
+        if args:
+            result.extend(args)
+    return result
+
+
+def build_command_line(url: str, command: str, format_override: str | None, extra_args: list[str] | None, config: Config) -> list[str]:
+    cmd_conf = config.get("commands", {}).get(command, {})
+    tool_name = cmd_conf.get("tool", "mpv")
+    tool_conf = config.get("tools", {}).get(tool_name, {})
+
+    site_conf = find_site_config(url, config)
+    site_cmd_conf = site_conf.get(command, {}) if site_conf else {}
+
+    binary = tool_conf.get("binary", tool_name)
+
+    # Note: This could lead to somewhat wild cli calls where we have 4 --format switches specified:
+    # Cli switch format override, tool global, command global and site global.
+    # But at least yt-dlp is smart enough to only pick the last one.
+    args = merge_args(
+        tool_conf.get("args"),
+        cmd_conf.get("args"),
+        site_cmd_conf.get("args"),
+        extra_args,
+    )
+
+    if format_override:
+        if tool_name == "mpv":
+            args.append(f"--ytdl-format={format_override}")
+        elif tool_name == "ytdl":
+            args.append(f"--format={format_override}")
+        else:
+          sys.exit(f"Unknown tool {tool_name}.")
+
+    args.append(url)
+
+    return [binary] + args
+
+
+def run_command(cmd: list[str]) -> int:
+    print(f"Executing:\n{' '.join(cmd)}\n")
+    try:
+        return subprocess.call(cmd, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+    except KeyboardInterrupt:
+        print("\nAborted.")
+        return 0
+
+
+def tty_echo_workaround() -> None:
+    subprocess.call(["stty", "echo"], stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+
+
+def main() -> int:
+    result = parse_args()
+    config = load_config()
+
+    urls = result.urls
+    if not urls:
+        urls = get_clipboard_urls()
+        if not urls:
+            sys.exit("No URLs provided and none found in clipboard.")
+
+    for url in urls:
+        cmd = build_command_line(url, result.command, result.format_override, result.extra_args, config)
+        ret = run_command(cmd)
+        if ret != 0:
+            print(f"Warning: command returned {ret}")
+
+    tty_echo_workaround()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
