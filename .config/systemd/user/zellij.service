@@ -1,0 +1,11 @@
+[Unit]
+Description=Start zelllij in background session %u@%H
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/zellij attach --create-background "%u@%H"
+ExecStop=/usr/bin/zellij kill-session "%u@%H"
+Restart=always
+
+[Install]
+WantedBy=default.target
