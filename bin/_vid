@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import argparse
 import subprocess
@@ -38,11 +38,18 @@ class ParseResult(NamedTuple):
     urls: list[str]
     format_override: str | None
     extra_args: list[str] | None
+    background: bool
 
 
 CONFIG_PATH = Path.home() / ".config" / "vid" / "config.toml"
 
 DEFAULT_COMMAND = "play"
+
+# Flags that should be deduplicated (only keep the last occurrence)
+FLAGS_DEDUP = {"--format", "--ytdl-format"}
+
+# Flags (keys) that should be merged to just one cli switch. Values concatenated using the separator (values).
+FLAGS_MERGE = {"--ytdl-raw-options": ","}
 
 
 def load_config() -> Config:
@@ -86,13 +93,14 @@ def parse_args() -> ParseResult:
 
     parser.add_argument("-f", "--format", dest="format_override", default=None, help="Format override")
     parser.add_argument("--args", dest="extra_args", action="append", help="Raw args to pass to tool (can be specified multiple times)")
+    parser.add_argument("-b", "--background", action="store_true", help="Run in background and return immediately")
 
     parser.add_argument("urls", nargs="*", help="URLs or file paths to play/download")
 
     parser.set_defaults(command=DEFAULT_COMMAND)
     args = parser.parse_args()
 
-    return ParseResult(args.command, args.urls, args.format_override, args.extra_args)
+    return ParseResult(args.command, args.urls, args.format_override, args.extra_args, args.background)
 
 
 def find_site_config(url: str, config: Config) -> dict:
@@ -105,12 +113,45 @@ def find_site_config(url: str, config: Config) -> dict:
     return {}
 
 
-def merge_args(*arg_lists: list[str] | None) -> list[str]:
+def args_dedup(args: list[str]) -> list[str]:
+    seen = set()
     result = []
-    for args in arg_lists:
-        if args:
-            result.extend(args)
+    for arg in reversed(args):
+        flag = arg.split("=", 1)[0]
+        if flag in FLAGS_DEDUP:
+            if flag not in seen:
+                seen.add(flag)
+                result.append(arg)
+        else:
+            result.append(arg)
+    result.reverse()
     return result
+
+
+def args_merge(values_by_flag: dict[str, list[str]]) -> list[str]:
+    result = []
+    for flag, sep in FLAGS_MERGE.items():
+        if values_by_flag[flag]:
+            result.append(f"{flag}={sep.join(values_by_flag[flag])}")
+    return result
+
+
+def args_generate(*args_lists: list[str] | None) -> list[str]:
+    args_to_dedup = []
+    values_to_merge: dict[str, list[str]] = {flag: [] for flag in FLAGS_MERGE}
+
+    for args in args_lists:
+        if not args:
+            continue
+        for arg in args:
+            flag = arg.split("=", 1)[0]
+            if flag in FLAGS_MERGE:
+                value = arg.split("=", 1)[1] if "=" in arg else ""
+                values_to_merge[flag].append(value)
+            else:
+                args_to_dedup.append(arg)
+
+    return args_dedup(args_to_dedup) + args_merge(values_to_merge)
 
 
 def build_command_line(url: str, command: str, format_override: str | None, extra_args: list[str] | None, config: Config) -> list[str]:
@@ -123,10 +164,7 @@ def build_command_line(url: str, command: str, format_override: str | None, extr
 
     binary = tool_conf.get("binary", tool_name)
 
-    # Note: This could lead to somewhat wild cli calls where we have 4 --format switches specified:
-    # Cli switch format override, tool global, command global and site global.
-    # But at least yt-dlp is smart enough to only pick the last one.
-    args = merge_args(
+    args = args_generate(
         tool_conf.get("args"),
         cmd_conf.get("args"),
         site_cmd_conf.get("args"),
@@ -146,10 +184,14 @@ def build_command_line(url: str, command: str, format_override: str | None, extr
     return [binary] + args
 
 
-def run_command(cmd: list[str]) -> int:
+def run_command(cmd: list[str], background: bool = False) -> int:
     print(f"Executing:\n{' '.join(cmd)}\n")
     try:
-        return subprocess.call(cmd, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+        if background:
+            subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return 0
+        else:
+            return subprocess.call(cmd, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
     except KeyboardInterrupt:
         print("\nAborted.")
         return 0
@@ -171,7 +213,7 @@ def main() -> int:
 
     for url in urls:
         cmd = build_command_line(url, result.command, result.format_override, result.extra_args, config)
-        ret = run_command(cmd)
+        ret = run_command(cmd, result.background)
         if ret != 0:
             print(f"Warning: command returned {ret}")
 
