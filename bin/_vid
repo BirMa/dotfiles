@@ -154,12 +154,13 @@ def args_generate(*args_lists: list[str] | None) -> list[str]:
     return args_dedup(args_to_dedup) + args_merge(values_to_merge)
 
 
-def build_command_line(url: str, command: str, format_override: str | None, extra_args: list[str] | None, config: Config) -> list[str]:
+def build_command_line(urls: list[str], command: str, format_override: str | None, extra_args: list[str] | None, config: Config) -> list[str]:
     cmd_conf = config.get("commands", {}).get(command, {})
     tool_name = cmd_conf.get("tool", "mpv")
     tool_conf = config.get("tools", {}).get(tool_name, {})
 
-    site_conf = find_site_config(url, config)
+    # Use first URL for site detection
+    site_conf = find_site_config(urls[0], config)
     site_cmd_conf = site_conf.get(command, {}) if site_conf else {}
 
     binary = tool_conf.get("binary", tool_name)
@@ -177,11 +178,9 @@ def build_command_line(url: str, command: str, format_override: str | None, extr
         elif tool_name == "ytdl":
             args.append(f"--format={format_override}")
         else:
-          sys.exit(f"Unknown tool {tool_name}.")
+            sys.exit(f"Unknown tool {tool_name}.")
 
-    args.append(url)
-
-    return [binary] + args
+    return [binary] + args + urls
 
 
 def run_command(cmd: list[str], background: bool = False) -> int:
@@ -211,14 +210,11 @@ def main() -> int:
         if not urls:
             sys.exit("No URLs provided and none found in clipboard.")
 
-    for url in urls:
-        cmd = build_command_line(url, result.command, result.format_override, result.extra_args, config)
-        ret = run_command(cmd, result.background)
-        if ret != 0:
-            print(f"Warning: command returned {ret}")
+    cmd = build_command_line(urls, result.command, result.format_override, result.extra_args, config)
+    ret = run_command(cmd, result.background)
 
     tty_echo_workaround()
-    return 0
+    return ret
 
 
 if __name__ == "__main__":
