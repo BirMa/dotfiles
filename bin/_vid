@@ -71,15 +71,25 @@ def get_clipboard_urls() -> list[str]:
             )
             if result.returncode == 0:
                 content = result.stdout.strip()
-                if is_playable(content):
+                if is_sane(content):
                     return content.split()
         except (subprocess.TimeoutExpired, FileNotFoundError):
             continue
     return []
 
 
-def is_playable(s: str) -> bool:
-    return s.startswith(("http://", "https://")) or Path(s).exists()
+def is_sane(s: str) -> bool:
+    if len(s) > 2**14:
+        print("Rejecting clipboard content, too long (>32KiB)")
+        return False
+    if "\x00" in s:
+        print("Rejecting clipboard content, contains null bytes")
+        return False
+    non_printable = sum(1 for c in s if not c.isprintable() and c not in " \t\n\r")
+    if non_printable > len(s) * 0.05:
+        print("Rejecting clipboard content, >5% non-printable, non-whitespace chars")
+        return False
+    return True
 
 
 def parse_args() -> ParseResult:
@@ -207,8 +217,9 @@ def main() -> int:
     urls = result.urls
     if not urls:
         urls = get_clipboard_urls()
-        if not urls:
-            sys.exit("No URLs provided and none found in clipboard.")
+
+    if not urls:
+        sys.exit("No URLs provided and none found in clipboard.")
 
     cmd = build_command_line(urls, result.command, result.format_override, result.extra_args, config)
     ret = run_command(cmd, result.background)
