@@ -681,7 +681,7 @@ Globalkeys = Awful.util.table.join(
   Awful.key({ modkey, "Shift"            }, "F11",      function () Awful.spawn(kbd_switch2_apl_cmd) end),
 
   -- rotate audio output defaults
-  Awful.key({ modkey,                    }, "F10",      function () Awful.spawn(pa_rotate_default_sinks_cmd) end),
+  Awful.key({ modkey,                    }, "F2",      function () Awful.spawn(pa_rotate_default_sinks_cmd) end),
 
   -- launch eject
   Awful.key({ modkey,                    }, "y",        function () Awful.spawn(eject_cmd) end),
