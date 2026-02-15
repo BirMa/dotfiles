@@ -718,11 +718,12 @@ Globalkeys = Awful.util.table.join(
   Awful.key({ modkey,                    }, "F"..tag_soundtools,    function () Awful.spawn("pwvucontrol") end),
 
   -- launch monitoring
-  Awful.key({ modkey                     }, "F"..tag_monitoring,    function ()
-    -- sleep in between to make window positions deterministic
-    Awful.spawn(terminal_cmd.." --title monitoring_btop btop"); os.execute("sleep .2")
-    Awful.spawn("psensor"); os.execute("sleep .2")
-  end),
+  -- Note: No need for two keybinds to start two separate monitoring solutions...
+  ---Awful.key({ modkey                     }, "F"..tag_monitoring,    function ()
+    ----- sleep in between to make window positions deterministic
+    ---Awful.spawn(terminal_cmd.." --title monitoring_btop btop"); os.execute("sleep .2")
+    ---Awful.spawn("psensor"); os.execute("sleep .2")
+  ---end),
   Awful.key({ modkey, "Shift"            }, "F"..tag_monitoring,    function ()
     -- sleep in between to make window positions deterministic
     Awful.spawn(terminal_cmd.." --title monitoring_nethogs nethogs_suid"); os.execute("sleep .2")
