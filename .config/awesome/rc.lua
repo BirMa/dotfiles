@@ -1176,7 +1176,8 @@ Autorun = true
 AutorunApps =
 {
   "awesome_autostart",
-  "xset -dpms",
+  -- "xset -dpms",
+  "xset dpms 900 960 1800", -- 15min to standby, suspend shortly after, full screen shut off after 30min
   "xset s off",
 }
 if Autorun then
