@@ -1,5 +1,5 @@
 [Unit]
-Description=Start zelllij in background session %u@%H
+Description=zelllij background session %u@%H
 
 [Service]
 Type=forking
