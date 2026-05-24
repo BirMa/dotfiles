@@ -37,8 +37,9 @@ class ParseResult(NamedTuple):
     command: str
     urls: list[str]
     format_override: str | None
-    extra_args: list[str] | None
+    extra_args: list[str]
     background: bool
+    dry_run: bool
 
 
 CONFIG_PATH = Path.home() / ".config" / "vid" / "config.toml"
@@ -104,13 +105,14 @@ def parse_args() -> ParseResult:
     parser.add_argument("-f", "--format", dest="format_override", default=None, help="Format override")
     parser.add_argument("--args", dest="extra_args", action="append", help="Raw args to pass to tool (can be specified multiple times)")
     parser.add_argument("-b", "--background", action="store_true", help="Run in background and return immediately")
+    parser.add_argument("-d", "--dry-run", action="store_true", help="Just print the command(s) that would be run and exit")
 
     parser.add_argument("urls", nargs="*", help="URLs or file paths to play/download")
 
     parser.set_defaults(command=DEFAULT_COMMAND)
     args = parser.parse_args()
 
-    return ParseResult(args.command, args.urls, args.format_override, args.extra_args, args.background)
+    return ParseResult(args.command, args.urls, args.format_override, args.extra_args or [], args.background, args.dry_run)
 
 
 def find_site_config(url: str, config: Config) -> dict:
@@ -128,11 +130,8 @@ def args_dedup(args: list[str]) -> list[str]:
     result = []
     for arg in reversed(args):
         flag = arg.split("=", 1)[0]
-        if flag in FLAGS_DEDUP:
-            if flag not in seen:
-                seen.add(flag)
-                result.append(arg)
-        else:
+        if flag not in seen:
+            seen.add(flag)
             result.append(arg)
     result.reverse()
     return result
@@ -147,8 +146,9 @@ def args_merge(values_by_flag: dict[str, list[str]]) -> list[str]:
 
 
 def args_generate(*args_lists: list[str] | None) -> list[str]:
-    args_to_dedup = []
     values_to_merge: dict[str, list[str]] = {flag: [] for flag in FLAGS_MERGE}
+    args_to_dedup = []
+    args_misc = []
 
     for args in args_lists:
         if not args:
@@ -158,13 +158,15 @@ def args_generate(*args_lists: list[str] | None) -> list[str]:
             if flag in FLAGS_MERGE:
                 value = arg.split("=", 1)[1] if "=" in arg else ""
                 values_to_merge[flag].append(value)
-            else:
+            elif flag in FLAGS_DEDUP:
                 args_to_dedup.append(arg)
+            else:
+                args_misc.append(arg)
 
-    return args_dedup(args_to_dedup) + args_merge(values_to_merge)
+    return args_misc + args_dedup(args_to_dedup) + args_merge(values_to_merge)
 
 
-def build_command_line(urls: list[str], command: str, format_override: str | None, extra_args: list[str] | None, config: Config) -> list[str]:
+def build_command_line(urls: list[str], command: str, format_override: str | None, extra_args: list[str], config: Config) -> list[str]:
     cmd_conf = config.get("commands", {}).get(command, {})
     tool_name = cmd_conf.get("tool", "mpv")
     tool_conf = config.get("tools", {}).get(tool_name, {})
@@ -175,6 +177,14 @@ def build_command_line(urls: list[str], command: str, format_override: str | Non
 
     binary = tool_conf.get("binary", tool_name)
 
+    if format_override:
+        if tool_name == "mpv":
+            extra_args.append(f"--ytdl-format={format_override}")
+        elif tool_name == "ytdl":
+            extra_args.append(f"--format={format_override}")
+        else:
+            sys.exit(f"Unknown tool {tool_name}.")
+
     args = args_generate(
         tool_conf.get("args"),
         cmd_conf.get("args"),
@@ -182,19 +192,14 @@ def build_command_line(urls: list[str], command: str, format_override: str | Non
         extra_args,
     )
 
-    if format_override:
-        if tool_name == "mpv":
-            args.append(f"--ytdl-format={format_override}")
-        elif tool_name == "ytdl":
-            args.append(f"--format={format_override}")
-        else:
-            sys.exit(f"Unknown tool {tool_name}.")
-
     return [binary] + args + urls
 
 
-def run_command(cmd: list[str], background: bool = False) -> int:
-    print(f"Executing:\n{' '.join(cmd)}\n")
+def run_command(cmd: list[str], background: bool, dry_run: bool) -> int:
+    print(f"Executing{" (dry run)" if dry_run else ""}:\n{' '.join(cmd)}\n")
+    if dry_run:
+        return 0
+
     try:
         if background:
             subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -222,7 +227,7 @@ def main() -> int:
         sys.exit("No URLs provided and none found in clipboard.")
 
     cmd = build_command_line(urls, result.command, result.format_override, result.extra_args, config)
-    ret = run_command(cmd, result.background)
+    ret = run_command(cmd, result.background, result.dry_run)
 
     tty_echo_workaround()
     return ret
