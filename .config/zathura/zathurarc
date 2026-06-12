@@ -22,10 +22,14 @@ map + zoom reset
 #map <A-3> set 'recolor-darkcolor #0a3144'
 #map <A-4> set 'recolor-lightcolor #f7f0c2'
 
-set recolor-darkcolor #fafffc
-set recolor-lightcolor #1c1f1e
+set recolor-darkcolor '#fafffc'
+set recolor-lightcolor '#1c1f1e'
+
+set recolor-keephue true
+set recolor-reverse-video false
 
 map <A-0> set recolor true
-#set recolor true
 #map <A-0> set recolor false
+
+set recolor true
 
