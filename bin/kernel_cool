@@ -32,7 +32,7 @@ if [[ $KERNEL_TIMESTAMP -ge $BOOT_TIMESTAMP ]]; then
     echo -e "(kernel newer than boot time)"
 fi
 
-TMP_Z="$XDG_CACHE_HOME/kernel_cool.z.tmp"
+#TMP_Z="$XDG_CACHE_HOME/kernel_cool.z.tmp"
 TMP_M="$XDG_CACHE_HOME/kernel_cool.m.tmp"
 function reload {
   if [[ -f "$1" && $(( $(/usr/bin/date +%s) - $(stat --format=%W "$1") )) -gt $(( 24*60*60 )) ]]; then
@@ -43,21 +43,21 @@ function reload {
     curl --silent "$2" >"$1"
   fi
 }
-reload "$TMP_Z" 'https://archzfs.com/archzfs/x86_64/'
+#reload "$TMP_Z" 'https://archzfs.com/archzfs/x86_64/' # archzfs.com is long dead
 reload "$TMP_M" 'https://geo.mirror.pkgbuild.com/core/os/x86_64/'
 
 echo -e "\navailable:"
 echo -n "    zfs: "
 # e.g.: zfs-linux-2.2.3_6.7.6.arch1.1-1-x86_64.pkg.tar.zst
-hq a attr href <"$TMP_Z" \
-  | perl -n -e \
-  'print if s/^zfs-linux-([0-9]+\.[0-9]+(?:\.[0-9]+)?)_([0-9]+\.[0-9]+\.(?:[0-9]+)?.*?)(?:-\d+)?-x86_64.pkg.tar.zst$/\2 (zfs \1)/'
+#hq a attr href <"$TMP_Z" \
+#  | perl -n -e \
+#  'print if s/^zfs-linux-([0-9]+\.[0-9]+(?:\.[0-9]+)?)_([0-9]+\.[0-9]+\.(?:[0-9]+)?.*?)(?:-\d+)?-x86_64.pkg.tar.zst$/\2 (zfs \1)/'
 
 echo -n "zfs-git: "
 # e.g.: zfs-linux-git-2024.02.16.r9031.gaf4da5ccf2_6.7.6.arch1.1-1-x86_64.pkg.tar.zst
-hq a attr href <"$TMP_Z" \
-  | perl -n -e \
-  'print if s/^zfs-linux-git-(20\d\d\.\d\d\.\d\d\.r\d+\.g[a-z0-9]+)_([0-9]+\.[0-9]+\.(?:[0-9]+)?.*?)(?:-\d+)?-x86_64.pkg.tar.zst$/\2 (zfs \1)/'
+#hq a attr href <"$TMP_Z" \
+#  | perl -n -e \
+#  'print if s/^zfs-linux-git-(20\d\d\.\d\d\.\d\d\.r\d+\.g[a-z0-9]+)_([0-9]+\.[0-9]+\.(?:[0-9]+)?.*?)(?:-\d+)?-x86_64.pkg.tar.zst$/\2 (zfs \1)/'
 
 echo -n "kernel:  "
 hq a attr href <"$TMP_M" \
