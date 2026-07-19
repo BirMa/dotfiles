@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#! /usr/bin/env bash
 
 POOL="$(zfs-poolname)"
 
@@ -15,4 +15,4 @@ zpool get -H -o name,property,value dedup "$POOL"
 zfs get -H -o name,property,value compressratio "$POOL"
 echo
 zpool iostat -l
-zfs --version | paste --serial
+echo -e "$(zfs --version | paste --serial)\tkernel:$(uname -r)"
